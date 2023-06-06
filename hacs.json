@@ -1,6 +1,6 @@
 {
-    "name": "Todoist Card",
+    "name": "PowerTodoist Card",
     "content_in_root": true,
-    "filename": "todoist-card.js",
+    "filename": "powertodoist-card.js",
     "render_readme": true
 }
