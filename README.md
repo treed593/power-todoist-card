@@ -1,10 +1,10 @@
-# Todoist Card
+# PowerTodoist Card
 
 [![hacs_badge](https://img.shields.io/badge/HACS-Default-orange.svg)](https://github.com/hacs/integration)
 ![hacs_badge](https://img.shields.io/github/v/release/grinstantin/todoist-card)
 ![hacs_badge](https://img.shields.io/github/license/grinstantin/todoist-card)
 
-Todoist card for [Home Assistant](https://www.home-assistant.io) Lovelace UI. This card displays items from selected Todoist project.
+PowerTodoist card for [Home Assistant](https://www.home-assistant.io) Lovelace UI. This card displays items from selected Todoist projects.
 
 ![Preview of todoist-card](https://user-images.githubusercontent.com/34913257/108243361-a8ea8500-7156-11eb-8313-a149a7cf38b8.png)
 
@@ -14,21 +14,21 @@ Todoist card for [Home Assistant](https://www.home-assistant.io) Lovelace UI. Th
 
 This card is available in [HACS](https://hacs.xyz) (Home Assistant Community Store).
 
-Just search for `Todoist Card` in HACS `Frontend` tab.
+Just search for `PowerTodoist Card` in HACS `Frontend` tab.
 
 ### Manual
 
-1. Download `todoist-card.js` file from the [latest release](https://github.com/grinstantin/todoist-card/releases/latest).
-2. Put `todoist-card.js` file into your `config/www` folder.
-3. Add a reference to `todoist-card.js` in Lovelace. There's two way to do that:
+1. Download `powertodoist-card.js` file from the [latest release](https://github.com/pgorod/power-todoist-card/releases/latest).
+2. Put `powertodoist-card.js` file into your `config/www` folder.
+3. Add a reference to `powertodoist-card.js` in Lovelace. There's two way to do that:
    1. **Using UI:** _Configuration_ → _Lovelace Dashboards_ → _Resources_ → Click Plus button → Set _Url_ as `/local/todoist-card.js` → Set _Resource type_ as `JavaScript Module`.
    2. **Using YAML:** Add the following code to `lovelace` section.
       ```yaml
       resources:
-        - url: /local/todoist-card.js
+        - url: /local/powertodoist-card.js
           type: module
       ```
-4. Add `custom:todoist-card` to Lovelace UI as any other card (using either editor or YAML configuration).
+4. Add `custom:powertodoist-card` to Lovelace UI as any other card (using either editor or YAML configuration).
 
 ## Using the card
 
@@ -78,7 +78,7 @@ This card can be configured using Lovelace UI editor.
 Typical example of using this card in YAML config would look like this:
 
 ```yaml
-type: 'custom:todoist-card'
+type: 'custom:powertodoist-card'
 entity: sensor.to_do_list
 show_header: true
 show_completed: 5
@@ -114,4 +114,7 @@ Here is what every option means:
 
 ## License
 
-MIT © [Konstantin Grinkevich](https://github.com/grinstantin)
+This project is licensed under the MIT license.
+
+Copyright for portions of project PowerTodoist-card are held by [Konstantin Grinkevich](https://github.com/grinstantin) as part of project Todoist-card. All other copyright for project PowerTodoist-card are held by [pgorod](https://github.com/pgorod)
+
