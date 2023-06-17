@@ -84,8 +84,9 @@ show_header: true
 show_completed: 5
 use_quick_add: true
 ```
+Note that the `to_do_list` entity name is what Home Assistant created based on the `name: To-do List` you specified earlier.
 
-Here is what every option means:
+### Configuration Options
 
 | Name                 |   Type    |   Default    | Description     |
 | -------------------- | :-------: | :----------: | ------------------------------------------------------------------ |
@@ -98,6 +99,8 @@ Here is what every option means:
 | `show_item_close`    | `boolean` | `true`       | Show `close/complete` and `uncomplete` buttons.       |
 | `show_item_delete`   | `boolean` | `true`       | Show `delete` buttons.        |
 | `sort_by_due_date`   | `boolean` | `false`      | Sort the tasks by their due date.   |
+| `friendly_name`      | `string` | `Todoist`      | The card name shown on top uses a somewhat elaborate logic: <br>the default is `Todoist`, if no name is specified. <br>But if a Section filter is specified, then that section name will be used instead. <br>Finally, if you do use the `friendly_name` option, it will override anything else.  |
+| `icons`   | `` | `false`      | Se.   |
 | `filter_today_overdue` | `boolean` | `false`      | Only show tasks that are overdue or due today.    |
 | `filter_due_days_out`       | `integer` | `-1`      | Show only items which have a due date within N days into the future. Using -1 disables this filter.   |
 | `filter_section_id` | `integer` | `(none)`      | Only show tasks from one Todoist section, identified by its id.    |
@@ -106,7 +109,9 @@ Here is what every option means:
 
 > Note that the completed tasks list is cleared when the page is refreshed.
 
-### Filtering by labels
+#### Filtering by labels
+
+Labels are colorful and beautiful. And useful! Define them in Todoist app, and don't forget to pick your favorite colors there - after some time, they will be picked up by PowerTodoist-card!
 
 The `filter_labels` option allows for several possibilities.
 - a label name will **include** items with that label
