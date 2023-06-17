@@ -129,16 +129,30 @@ When you filter by a single label, that label won't appear graphically under eac
 
 ## Actions
 
-- _Circle_ marks selected task as completed.
-- _Plus_ "uncompletes" selected task, adding it back to the list.
-- _Trash bin_ deletes selected task (gray one deletes it only from the list of completed items, not from Todoist archive).
+Basic behaviour is this:
+- ![image](https://github.com/pgorod/power-todoist-card/assets/15945027/793f8b01-4203-4e5a-81e1-785bb1d284a3) marks selected task as completed.
+- ![image](https://github.com/pgorod/power-todoist-card/assets/15945027/5714d361-376b-4666-9ebf-a7611b13d0d4)  "uncompletes" selected task, adding it back to the list.
+- ![image](https://github.com/pgorod/power-todoist-card/assets/15945027/cc682901-ca9b-43e7-b1ba-e7eb276f66b4) deletes selected task (gray one deletes it only from the list of completed items, not from Todoist archive).
 - _Input_ adds new item to the list after pressing `Enter`.
+
+But with this card, almost everything is programmable :-), so in the configurations you can optionally add sections to specify what happens when...
+
+| Action names                |   Triggered by |
+| --------------------------------------------------- | ------------------------------------------------- |
+| actions_close<br>actions_dbl_close | A tap or double-tap on the close button (checking a task as done) |
+| actions_content<br>actions_dbl_content | A tap or double-tap on the content (text) of the task |
+| actions_description<br>actions_dbl_description | A tap or double-tap on the desciption text of the task, if it is defined in Todoist. |
+| actions_label<br>actions_dbl_label | A tap or double-tap on any of the task's labels (currently it is not possible to differentiate taps on different labels). |
+| actions_delete<br>actions_dbl_delete | A tap or double-tap on the delete button to the right of the task. |
+| actions_uncomplete<br>actions_dbl_uncomplete | A tap or double-tap on the task uncomplete button on a recently completed task (shown at the bottom). |
+
+
 
 ## To-do / Things you can help with!
 
 - many options are only available through YAML configuration, but could easily be added to the **UI configuration**. If only somebody would do this and test properly and create a PR... for the most part, you'd just have to copy existing code for the other options.
 - ability to set **icon colors**
-- I'd love to have actions you can trigger with **long taps**. But this is out of my Javascript league, I am not a JS guy, this is the first project I've done in JS, and I can't even say that I've learned it, I just stumbled along and did it.
+- I'd love to have actions you can trigger with **long taps**. But this is out of my Javascript league, I am not a JS guy, this is the first project I've done in JS, and I can't even say that I've learned it, I just stumbled along and did it :-)
 
 ## License
 
@@ -151,3 +165,5 @@ Copyright for portions of project PowerTodoist-card are held by [Konstantin Grin
 If you enjoy and use this card, I'd appreciate it if you can sponsor my work. I'm actually trying to make a living from Github sponsorships, mostly from other projects, but Home Assistant users are numerous, every small donation will also help! Thanks, I really appreciate it!
 
 [![](https://img.shields.io/static/v1?label=Sponsor&message=%E2%9D%A4&logo=GitHub&color=%23fe8e86)](https://github.com/sponsors/pgorod)
+
+Note that you pick a one-time amount and select any value you want.
