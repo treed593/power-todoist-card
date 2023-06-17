@@ -75,35 +75,51 @@ This card can be configured using Lovelace UI editor.
 9. Choose `entity`.
 10. Now you should see the preview of the card!
 
-Typical example of using this card in YAML config would look like this:
+A basic example of using this card in YAML config could look like this:
 
 ```yaml
 type: 'custom:powertodoist-card'
 entity: sensor.to_do_list
 show_header: true
 show_completed: 5
-show_item_add: true
-use_quick_add: false
-show_item_close: true
-show_item_delete: true
-only_today_overdue: false
+use_quick_add: true
 ```
 
 Here is what every option means:
 
-| Name                 |   Type    |   Default    | Description                                                                                                                      |
-| -------------------- | :-------: | :----------: | -------------------------------------------------------------------------------------------------------------------------------- |
-| `type`               | `string`  | **required** | `custom:todoist-card`                                                                                                            |
-| `entity`             | `string`  | **required** | An entity_id within the `sensor` domain.                                                                                         |
-| `show_completed`     | `integer` | `5`          | Number of completed tasks shown at the end of the list (0 to disable).                                                           |
-| `show_header`        | `boolean` | `true`       | Show friendly name of the selected `sensor` in the card header.                                                                  |
-| `show_item_add`      | `boolean` | `true`       | Show text input element for adding new items to the list.                                                                        |
+| Name                 |   Type    |   Default    | Description     |
+| -------------------- | :-------: | :----------: | ------------------------------------------------------------------ |
+| `type`               | `string`  | **required** | `custom:todoist-card`            |
+| `entity`             | `string`  | **required** | An entity_id within the `sensor` domain.   |
+| `show_completed`     | `integer` | `5`          | Number of completed tasks shown at the end of the list (0 to disable).   |
+| `show_header`        | `boolean` | `true`       | Show friendly name of the selected `sensor` in the card header.      |
+| `show_item_add`      | `boolean` | `true`       | Show text input element for adding new items to the list.        |
 | `use_quick_add`      | `boolean` | `false`      | Use the [Quick Add](https://todoist.com/help/articles/task-quick-add) implementation, available in the official Todoist clients. |
-| `show_item_close`    | `boolean` | `true`       | Show `close/complete` and `uncomplete` buttons.                                                                                  |
-| `show_item_delete`   | `boolean` | `true`       | Show `delete` buttons.                                                                                                           |
-| `only_today_overdue` | `boolean` | `false`      | Only show tasks that are overdue or due today.                                                                                   |
+| `show_item_close`    | `boolean` | `true`       | Show `close/complete` and `uncomplete` buttons.       |
+| `show_item_delete`   | `boolean` | `true`       | Show `delete` buttons.        |
+| `sort_by_due_date`   | `boolean` | `false`      | Sort the tasks by their due date.   |
+| `filter_today_overdue` | `boolean` | `false`      | Only show tasks that are overdue or due today.    |
+| `filter_due_days_out`       | `integer` | `-1`      | Show only items which have a due date within N days into the future. Using -1 disables this filter.   |
+| `filter_section_id` | `integer` | `(none)`      | Only show tasks from one Todoist section, identified by its id.    |
+| `filter_section` | `string` | `(none)`      | Only show tasks from one Todoist section, identified by its name.  |
+| `filter_labels` | `list` | `(none)`      | Only show tasks with the specified Todoist labels. See below for details on this powerful option.    |
 
 > Note that the completed tasks list is cleared when the page is refreshed.
+
+### Filtering by labels
+
+The `filter_labels` option allows for several possibilities.
+- a label name will **include** items with that label
+- if you prefix a label with `!` then it will **exclude** items with that label.
+- use a special label called `*` to include items with any label (but not items without any labels at all).
+- use a special label called `!*` to include items without any labels at all.
+- you can combine lines with any of the above filters to join these conditions (for nerds, this will be a logical OR of the inclusion filters, but the exclusion filters always defeat anything else).
+
+| Filters                 |   Meaning |
+| --------------------------------------------------- | ------------------------------------------------- |
+| `filter_labels:`<br>`  - "!Hidden"`<br>`  - "%user%"`<br>`  - "Important"`    | Shows items that don't have the `Hidden` label, and that either have <br>the `Important` label or a label with the current HASS user name. |
+
+When you filter by a single label, that label won't appear graphically under each item; instead, it will appear on the top, next to the list name.
 
 ## Actions
 
@@ -111,6 +127,11 @@ Here is what every option means:
 - _Plus_ "uncompletes" selected task, adding it back to the list.
 - _Trash bin_ deletes selected task (gray one deletes it only from the list of completed items, not from Todoist archive).
 - _Input_ adds new item to the list after pressing `Enter`.
+
+## To-do / Things you can help with!
+
+- many options are only available through YAML configuration, but could easily be added to the UI configuration. If only somebody would do this and test properly and create a PR... for the most part, you'd just have to copy existing code for the other options.
+- 
 
 ## License
 
