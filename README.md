@@ -142,7 +142,7 @@ Basic behaviour is this:
 
 But with this card, almost everything is programmable :-), so in the configurations you can optionally create lists of custom actions to run when the user does something. These action lists use the following headers according to the user event:
 
-| User Events                |   Triggered by | Default actions (if none are specified) |
+| User Event                |   Triggered by | Default actions (if no custom actions are specified) |
 | --------------------------------------------------- | ------------------------------------------------- | --------- |
 | actions_close | A tap on the close button (checking a task as done) | Close (complete) the task as done in Todoist. |
 | actions_dbl_close | A  double-tap on the close button (checking a task as done) | Nothing |
@@ -159,17 +159,19 @@ But with this card, almost everything is programmable :-), so in the configurati
 
 Under those headers, you can use a list of actions to specify custom behaviours. Your options for the actions are:
 
-| Actions                 |   Meaning |
+| Custom Action                 |   What it does |
 | -------------------------------------- | ----------------------------------------- |
-| `close`     | Closes (completes) the item in Todoist. |
-| `delete`    | Deletes the item in Todoist. |
-| `move`      | Moves the item in Todoist to the next section. If it's currently in the last section, item will be moved to the special "(No section)" section. |
-| `confirm`   | Opens a dialog box asking the user to confirm the action. If the user approves, action continues, otherwise it is cancelled. |
-| `toast`     | Flashes a message for a few seconds giving some information to the user. |
-| `label`     | Closes (completes) the item in Todoist. |
-| `promptTexts`
+| `close`        | Closes (completes) the item in Todoist. |
+| `delete`       | Deletes the item in Todoist. |
+| `move`         | Moves the item in Todoist to the next section. If it's currently in the last section, item will be moved to the special "(No section)" section. |
+| `confirm`      | Opens a dialog box asking the user to confirm the action. If the user approves, action continues, otherwise it is cancelled. <br>Specify an optional string for a custom confirmation text. |
+| `toast`        | Flashes a message for a few seconds giving some information to the user. |
+| `update`       | Sets new values to the item's fields in Todoist. <br>This is a list which allows all Todoist field types: `content`, `description`, `priority`, `collapsed`, `assigned_by_uid`, `responsible_uid`, `day_order`<br>You can use variables here. One of the variables can be `%input%` which will cause the user to be prompted for the value. use `prompt_texts` to control the dialog box displayed. |
+| `prompt_texts` | Not really an action, but you can use this to set a couple of strings to be used in other actions. <br>Use two strings separated by the `\|` character. The first will be the dialog box title, the second will be the default value presented in the input box. The variable `%content%` will be useful here to show the current value. <br>So, for example, `"Insert new name:\|%content%"` will set the prompt for an update action that references `%input%` , asking the user to give a new name, showing the current name in the input box, so it can be easily edited. |
+| `automation`   | Runs the specified automation in Home Assistant. This is very powerful! It is the action that contains a thousand possibilities! 🚀 <br>And this is what makes the PowerTodoist card really a Home Assistant thing - not just an interface to your Todoist. |
+| `label`        | Here `label` is a verb! You use this action to label the current item as you prefer. <br>Use a list of label names. If you prefix a label name with a `!` that label will be removed, instead of added. Use `!*` to clear all labels. |
 
-The items in this table must always appear below a user event from the previous table, like this:
+The items in this **Actions** table must always appear below a user **Event** from the previous table, like this:
 ```
 - actions_delete
   - confirm
@@ -179,17 +181,37 @@ Actions are executed in the order given. If you include a list of actions for an
 
 ## Variables
 
+This feature is undergoing a major re-factoring and might not work perfectly well in all places. But the general idea is that you can use these in any configuration option and they will get substituted, if the value is available (makes sense in that context). In case of doubt, just try it and see how it goes.
+
+| Variable name                 |   Text that will be substituted | 
+| -------------------------------------- | ----------------------------------------- |
+| `%was%`   | Previous value |
+| `%input%`   | Value returned from a prompt shown to the user. The prompt can be customized with `prompt_texts` action. |
+| `%line%`   | A new line character. Allows breaking lines in places where it would be difficult to add a new line in YAML. |
+| `%user%`   | The current Home Assistant user name. This is also super powerful to build multi-user systems. You can create separate lists per user, and you can use labels with user names to move things from one to the other. Note that this is not the Todoist user names; it is meant for use with a single Todoist user, the trick is to use labels or sections to separate tasks by HASS users. |
+| `%date%`   | The current date, formatted as specified by the `date_format` option. <br>Default format is `"mmm dd H:mm"`<br>Complete formatting options are documented [here](https://blog.stevenlevithan.com/archives/javascript-date-format). |
+| `%str_labels%`   | The current items labels, all concatenated as a comma-separated string. |
+
+Let me know if you have other ideas for variables that could prove useful.
+
+## Kanbans and Multiple task lists
+
+You can use as many of these cards as you want in your dashboards, of course. But I find that this looks particularly cool, and works in a particularly functional way, if you combine this card with the HACS [Swipe card](https://github.com/bramkragten/swipe-card). Just have a card for each Todoist section, and put them all together in a Swipe card, to get the feeling of a Kanban. Use the `move` action to move items to the next card.
+
+Or use one card per user (family member) for home tasks that you want everyone to be able to see. You can check everybody's progress by swiping sideways. I even like to use a final card which is a Markdown card with home rules or instructions for the use of the Task list. 
+
 ## To-do / Things you can help with!
 
 - many options are only available through YAML configuration, but could easily be added to the **UI configuration**. If only somebody would do this and test properly and create a PR... for the most part, you'd just have to copy existing code for the other options.
 - ability to set **icon colors**
 - I'd love to have actions you can trigger with **long taps**. But this is out of my Javascript league, I am not a JS guy, this is the first project I've done in JS, and I can't even say that I've learned it, I just stumbled along and did it :-)
+- Automations can add Todoist tasks (with all the power of the Quick Add feature). But they can't change existing tasks, which would definitely be useful. This would require some way of focusing in on a specific task, since you don't have such context in the Automations. I haven't thought of a nice clean way of achieving this.
 
 ## License
 
 This project is licensed under the MIT license.
 
-Copyright for portions of project PowerTodoist-card are held by [Konstantin Grinkevich](https://github.com/grinstantin) as part of project Todoist-card. All other copyright for project PowerTodoist-card are held by [pgorod](https://github.com/pgorod)
+Copyright for portions of project PowerTodoist-card are held by [Konstantin Grinkevich](https://github.com/grinstantin) as part of project Todoist-card. All other copyright for project PowerTodoist-card is held by [pgorod](https://github.com/pgorod)
 
 # Sponsor me, please!
 
