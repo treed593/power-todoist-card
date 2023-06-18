@@ -1,0 +1,92 @@
+type: custom:swipe-card
+start_card: 1
+parameters:
+  #try these other effects: coverflow cube cards
+  effect: cube 
+  rewind: true
+  grabCursor: true
+  centeredSlides: true
+  slidesPerView: auto
+  pagination: null
+  type: bullets
+cards:
+# -----------------------------------------------
+  - type: custom:powertodoist-card
+    entity: sensor.todoist_project_demo
+    filter_section_id: "126441621"
+    filter_labels:
+      - "!Charcoal"
+      - "*"
+    actions_close:
+      - prompt_texts: "Title here!|post-%content%"
+      - update:
+        - content: "Now is %input%"
+        - description: "Input: %input% content: %content%"
+    actions_content:
+      - prompt_texts: "Insert new content:|%content%"
+      - update:
+        - content: "%input%"
+        - description: "Input: %input% content: %content%"
+    actions_dbl_content:
+      - label:
+        - "!*"
+        - "Green"
+      - move
+      - update:
+        - content: "User was %user%"
+        - description: |
+            %input% %user% ✅ %date% labels will be %str_labels%%line%%was%
+        - priority: 3
+    actions_label:
+      - label:
+        - "!Green"
+      - automation: action_notify_sim
+    actions_dbl_label:
+      - label:
+        - "!*"
+    actions_delete:
+      - confirm: "You really wanna delete it?"
+      - label:
+        - "Charcoal"
+      - delete
+    show_item_add: true
+    show_item_delete: true
+    show_completed: 5
+    use_quick_add: true 
+    icons: ["checkbox-marked-circle-outline", "circle-medium", "undo", "trash-can-outline"]
+    #icons: ["numeric-1-box", "numeric-2-box", "numeric-3-box", "numeric-4-box"]
+# -----------------------------------------------
+  - type: custom:powertodoist-card
+    entity: sensor.todoist_project_demo
+    filter_section_id: "126441679"
+    filter_labels: 
+      - "Blue"
+    actions_close:
+      - label:
+        - "Blue"
+        - "!Green"
+      - move  
+    show_item_add: true
+    show_item_delete: false
+    use_quick_add: true 
+# -----------------------------------------------
+  - type: custom:powertodoist-card
+    entity: sensor.todoist_project_demo
+    #filter_section_id: "126441680"
+    filter_section: "Done"
+    actions_close:
+      - label:
+        - "Blue"
+        - "!Green"
+      - move  
+    show_item_add: true
+    show_item_delete: false
+    use_quick_add: true 
+# -----------------------------------------------
+  - type: markdown
+    content: >
+      <h1><ha-alert alert-type="info">Some Instructions...</ha-alert></h1> 
+      {{ state_attr('sensor.todoist_project_demo','project_notes')[0].content }}
+      ... and remember to remember things!
+      <p><img style="display: block; margin-left: auto; margin-right: auto; width: 70%;" src="https://media.giphy.com/media/lELRD773cY7Sg/giphy.gif"></p>
+
