@@ -12,9 +12,11 @@ PowerTodoist card for [Home Assistant](https://www.home-assistant.io) Lovelace U
 
 ### HACS
 
-This card is available in [HACS](https://hacs.xyz) (Home Assistant Community Store).
+(not working yet...)
 
-Just search for `PowerTodoist Card` in HACS `Frontend` tab.
+~~This card is available in [HACS](https://hacs.xyz) (Home Assistant Community Store).
+
+~~Just search for `PowerTodoist Card` in HACS `Frontend` tab.
 
 ### Manual
 
@@ -123,11 +125,14 @@ The `filter_labels` option allows for several possibilities.
 
 | Filters                 |   Meaning |
 | --------------------------------------------------- | ------------------------------------------------- |
+| `filter_labels:`<br>`  - "Blue"`<br>`  - "Green"`    | Shows items with either a `Green` or a `Blue` label, or both. |
+| `filter_labels:`<br>`  - "!Done"`   | Shows items that don't have a `Done` label. |
 | `filter_labels:`<br>`  - "!Hidden"`<br>`  - "%user%"`<br>`  - "Important"`    | Shows items that don't have the `Hidden` label, and that either have <br>the `Important` label or a label with the current HASS user name. |
+| `filter_labels:`<br>`  - "For&nbsp;%user%"`    | Shows items that have a label composed of the letters `For` and the current user name. For example, if user is called `Joe` then a label `For Joe` would match. |
 
 When you filter by a single label, that label won't appear graphically under each item; instead, it will appear on the top, next to the list name.
 
-## Actions
+## Handling Events with Actions
 
 Basic behaviour is this:
 - ![image](https://github.com/pgorod/power-todoist-card/assets/15945027/793f8b01-4203-4e5a-81e1-785bb1d284a3) marks selected task as completed.
@@ -135,18 +140,44 @@ Basic behaviour is this:
 - ![image](https://github.com/pgorod/power-todoist-card/assets/15945027/cc682901-ca9b-43e7-b1ba-e7eb276f66b4) deletes selected task (gray one deletes it only from the list of completed items, not from Todoist archive).
 - _Input_ adds new item to the list after pressing `Enter`.
 
-But with this card, almost everything is programmable :-), so in the configurations you can optionally add sections to specify what happens when...
+But with this card, almost everything is programmable :-), so in the configurations you can optionally create lists of custom actions to run when the user does something. These action lists use the following headers according to the user event:
 
-| Action names                |   Triggered by |
-| --------------------------------------------------- | ------------------------------------------------- |
-| actions_close<br>actions_dbl_close | A tap or double-tap on the close button (checking a task as done) |
-| actions_content<br>actions_dbl_content | A tap or double-tap on the content (text) of the task |
-| actions_description<br>actions_dbl_description | A tap or double-tap on the desciption text of the task, if it is defined in Todoist. |
-| actions_label<br>actions_dbl_label | A tap or double-tap on any of the task's labels (currently it is not possible to differentiate taps on different labels). |
-| actions_delete<br>actions_dbl_delete | A tap or double-tap on the delete button to the right of the task. |
-| actions_uncomplete<br>actions_dbl_uncomplete | A tap or double-tap on the task uncomplete button on a recently completed task (shown at the bottom). |
+| User Events                |   Triggered by | Default actions (if none are specified) |
+| --------------------------------------------------- | ------------------------------------------------- | --------- |
+| actions_close | A tap on the close button (checking a task as done) | Close (complete) the task as done in Todoist. |
+| actions_dbl_close | A  double-tap on the close button (checking a task as done) | Nothing |
+| actions_content | A tap on the content (text) of the task | Open dialog box to update the text of the task. |
+| actions_dbl_content | A double-tap on the content (text) of the task | Nothing |
+| actions_description | A tap on the desciption text of the task, if it is defined in Todoist. | Open dialog box to update the description of the task. |
+| actions_dbl_description | A double-tap on the desciption text of the task, if it is defined in Todoist. | Nothing |
+| actions_label | A tap on any of the task's labels (currently it is not possible to differentiate taps on different labels). | Nothing |
+| actions_dbl_label | A double-tap on any of the task's labels (currently it is not possible to differentiate taps on different labels). | Nothing |
+| actions_delete | A tap on the delete button to the right of the task. | Delete the task in Todoist. |
+| actions_dbl_delete | A double-tap on the delete button to the right of the task. | Nothing |
+| actions_uncomplete | A tap on the task uncomplete button on a recently completed task (shown at the bottom). | Undo the task completion of a recently completed task. |
+| actions_dbl_uncomplete | A double-tap on the task uncomplete button on a recently completed task (shown at the bottom). | Nothing |
 
+Under those headers, you can use a list of actions to specify custom behaviours. Your options for the actions are:
 
+| Actions                 |   Meaning |
+| -------------------------------------- | ----------------------------------------- |
+| `close`     | Closes (completes) the item in Todoist. |
+| `delete`    | Deletes the item in Todoist. |
+| `move`      | Moves the item in Todoist to the next section. If it's currently in the last section, item will be moved to the special "(No section)" section. |
+| `confirm`   | Opens a dialog box asking the user to confirm the action. If the user approves, action continues, otherwise it is cancelled. |
+| `toast`     | Flashes a message for a few seconds giving some information to the user. |
+| `label`     | Closes (completes) the item in Todoist. |
+| `promptTexts`
+
+The items in this table must always appear below a user event from the previous table, like this:
+```
+- actions_delete
+  - confirm
+  - delete
+```
+Actions are executed in the order given. If you include a list of actions for an event, the default actions won't be executed unless you specify them explicitly. 
+
+## Variables
 
 ## To-do / Things you can help with!
 
