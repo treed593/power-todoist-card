@@ -211,6 +211,11 @@ This feature is undergoing a major re-factoring and might not work perfectly wel
 
 Let me know if you have other ideas for variables that could prove useful.
 
+## Learn by example
+
+Have a look at this demo file: 
+https://github.com/pgorod/power-todoist-card/blob/main/todoist_demo.yaml
+
 ## Kanbans and Multiple task lists
 
 You can use as many of these cards as you want in your dashboards, of course. But I find that this looks particularly cool, and works in a particularly functional way, if you combine this card with the HACS [Swipe card](https://github.com/bramkragten/swipe-card). Just have a card for each Todoist section, and put them all together in a Swipe card, to get the feeling of a Kanban. Use the `move` action to move items to the next card.
