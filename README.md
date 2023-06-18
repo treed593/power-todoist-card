@@ -39,8 +39,8 @@ This card can be configured using Lovelace UI editor.
 1. Add the following code to `configuration.yaml`:
     ```yaml
     sensor:
-      - platform: rest
-        name: To-do List
+      - name: To-do List
+        platform: rest
         method: GET
         resource: 'https://api.todoist.com/sync/v9/projects/get_data'
         params:
@@ -51,7 +51,18 @@ This card can be configured using Lovelace UI editor.
         json_attributes:
           - project
           - items
+          - sections
+          - project_notes
         scan_interval: 30
+        
+      - name: label_colors
+        platform: command_line
+        command: !secret todoist_cmd_with_api_token
+        value_template: > 
+            {{ value_json.label_colors | length }}
+        json_attributes:
+            - label_colors 
+        scan_interval: 200
 
     rest_command:
       todoist:
@@ -64,21 +75,23 @@ This card can be configured using Lovelace UI editor.
     ```
     👉 The REST command is constant and needs to be defined only once for each Todoist account used (I recommend using only one and handling any content separation with cleverly filtered projects, sections, and labels).
     
-    The Sensor definition, on the other hand, can be multiplied to allow for different projects.
+    👉 The Sensor definition, on the other hand, can be cloned to allow for different projects, just make sure you set a unique entity name, and set the appropriate `TODOIST_PROJECT_ID` for each one (see below).
 2. ... and to `secrets.yaml`:
     ```yaml
     todoist_api_token: 'Bearer TODOIST_API_TOKEN'
+    todoist_cmd_with_api_token: 'echo "{\"label_colors\":" $(curl -s https://api.todoist.com/rest/v2/labels -H "Accept: application/json" -H "Authorization: Bearer TODOIST_API_TOKEN") "}" '
     ```
-3. Replace `TODOIST_API_TOKEN` with your [token](https://todoist.com/prefs/integrations) and `TODOIST_PROJECT_ID` with ID of your selected Todoist project.
+3. In `secrets.yaml`, replace two instances of `TODOIST_API_TOKEN` with your private [API Token](https://todoist.com/prefs/integrations/developer).
+4. In `configuration.yaml`, replace `TODOIST_PROJECT_ID` with ID of your selected Todoist project.
     > You can get `TODOIST_PROJECT_ID` from project URL, which usually looks like this:
     `https://todoist.com/app/project/TODOIST_PROJECT_ID`
-4. Reload configs or restart Home Assistant.
-5. In Lovelace UI, click 3 dots in top left corner.
-6. Click _Edit Dashboard_.
-7. Click _Add Card_ button in the bottom right corner to add a new card.
-8. Find _Custom: Todoist Card_ in the list.
-9. Choose `entity`.
-10. Now you should see the preview of the card!
+5. Reload configs or restart Home Assistant.
+6. In Lovelace UI, click 3 dots in top left corner.
+7. Click _Edit Dashboard_.
+8. Click _Add Card_ button in the bottom right corner to add a new card.
+9. Find _Custom: Todoist Card_ in the list.
+10. Choose `entity`.
+11. Now you should see the preview of the card!
 
 A basic example of using this card in YAML config could look like this:
 
@@ -89,7 +102,8 @@ show_header: true
 show_completed: 5
 use_quick_add: true
 ```
-Note that the `to_do_list` entity name is what Home Assistant created based on the `name: To-do List` you specified earlier in the sensor definition.
+Note that the `to_do_list` entity name is what Home Assistant created based on the `name: To-do List` you specified earlier in the sensor definition. 
+Spaces and hyphens turned into `_`, and everything became lowercase. In case of doubt search your entities in HASS for the correct name.
 
 ### Configuration Options
 
