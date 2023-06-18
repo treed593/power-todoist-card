@@ -6,7 +6,7 @@
 
 PowerTodoist card for [Home Assistant](https://www.home-assistant.io) Lovelace UI. This card displays items from selected Todoist projects.
 
-![Preview of todoist-card](https://user-images.githubusercontent.com/34913257/108243361-a8ea8500-7156-11eb-8313-a149a7cf38b8.png)
+https://github.com/pgorod/power-todoist-card/assets/15945027/d049b00a-d406-4b7c-8803-92695d88b1b2
 
 ## Installing
 
