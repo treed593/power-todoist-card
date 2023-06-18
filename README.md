@@ -14,9 +14,9 @@ PowerTodoist card for [Home Assistant](https://www.home-assistant.io) Lovelace U
 
 (not working yet...)
 
-~~This card is available in [HACS](https://hacs.xyz) (Home Assistant Community Store).
+~~This card is available in [HACS](https://hacs.xyz) (Home Assistant Community Store).~~
 
-~~Just search for `PowerTodoist Card` in HACS `Frontend` tab.
+~~Just search for `PowerTodoist Card` in HACS `Frontend` tab.~~
 
 ### Manual
 
@@ -62,6 +62,9 @@ This card can be configured using Lovelace UI editor.
           Authorization: !secret todoist_api_token
         content_type: 'application/x-www-form-urlencoded'
     ```
+    👉 The REST command is constant and needs to be defined only once for each Todoist account used (I recommend using only one and handling any content separation with cleverly filtered projects, sections, and labels).
+    
+    The Sensor definition, on the other hand, can be multiplied to allow for different projects.
 2. ... and to `secrets.yaml`:
     ```yaml
     todoist_api_token: 'Bearer TODOIST_API_TOKEN'
@@ -86,7 +89,7 @@ show_header: true
 show_completed: 5
 use_quick_add: true
 ```
-Note that the `to_do_list` entity name is what Home Assistant created based on the `name: To-do List` you specified earlier.
+Note that the `to_do_list` entity name is what Home Assistant created based on the `name: To-do List` you specified earlier in the sensor definition.
 
 ### Configuration Options
 
@@ -128,7 +131,7 @@ The `filter_labels` option allows for several possibilities.
 | `filter_labels:`<br>`  - "Blue"`<br>`  - "Green"`    | Shows items with either a `Green` or a `Blue` label, or both. |
 | `filter_labels:`<br>`  - "!Done"`   | Shows items that don't have a `Done` label. |
 | `filter_labels:`<br>`  - "!Hidden"`<br>`  - "%user%"`<br>`  - "Important"`    | Shows items that don't have the `Hidden` label, and that either have <br>the `Important` label or a label with the current HASS user name. |
-| `filter_labels:`<br>`  - "For&nbsp;%user%"`    | Shows items that have a label composed of the letters `For` and the current user name. For example, if user is called `Joe` then a label `For Joe` would match. |
+| `filter_labels:`<br>`  - "For%user%"`    | Shows items that have a label composed of the letters `For` and the current user name. For example, if user is called `Joe` then a label `ForJoe` would match. |
 
 When you filter by a single label, that label won't appear graphically under each item; instead, it will appear on the top, next to the list name.
 
@@ -142,34 +145,34 @@ Basic behaviour is this:
 
 But with this card, almost everything is programmable :-), so in the configurations you can optionally create lists of custom actions to run when the user does something. These action lists use the following headers according to the user event:
 
-| User Event                |   Triggered by | Default actions (if no custom actions are specified) |
+| **User Event**               |   Triggered by | Default actions (if no custom actions are specified) |
 | --------------------------------------------------- | ------------------------------------------------- | --------- |
-| actions_close | A tap on the close button (checking a task as done) | Close (complete) the task as done in Todoist. |
+| **actions_close** | A tap on the close button (checking a task as done) | Close (complete) the task as done in Todoist. |
 | actions_dbl_close | A  double-tap on the close button (checking a task as done) | Nothing |
-| actions_content | A tap on the content (text) of the task | Open dialog box to update the text of the task. |
+| **actions_content** | A tap on the content (text) of the task | Open dialog box to update the text of the task. |
 | actions_dbl_content | A double-tap on the content (text) of the task | Nothing |
-| actions_description | A tap on the desciption text of the task, if it is defined in Todoist. | Open dialog box to update the description of the task. |
+| **actions_description** | A tap on the desciption text of the task, if it is defined in Todoist. | Open dialog box to update the description of the task. |
 | actions_dbl_description | A double-tap on the desciption text of the task, if it is defined in Todoist. | Nothing |
-| actions_label | A tap on any of the task's labels (currently it is not possible to differentiate taps on different labels). | Nothing |
+| **actions_label** | A tap on any of the task's labels (currently it is not possible to differentiate taps on different labels). | Nothing |
 | actions_dbl_label | A double-tap on any of the task's labels (currently it is not possible to differentiate taps on different labels). | Nothing |
-| actions_delete | A tap on the delete button to the right of the task. | Delete the task in Todoist. |
+| **actions_delete** | A tap on the delete button to the right of the task. | Delete the task in Todoist. |
 | actions_dbl_delete | A double-tap on the delete button to the right of the task. | Nothing |
-| actions_uncomplete | A tap on the task uncomplete button on a recently completed task (shown at the bottom). | Undo the task completion of a recently completed task. |
+| **actions_uncomplete** | A tap on the task uncomplete button on a recently completed task (shown at the bottom). | Undo the task completion of a recently completed task. |
 | actions_dbl_uncomplete | A double-tap on the task uncomplete button on a recently completed task (shown at the bottom). | Nothing |
 
 Under those headers, you can use a list of actions to specify custom behaviours. Your options for the actions are:
 
-| Custom Action                 |   What it does |
+| **Custom Action**                 |   What it does |
 | -------------------------------------- | ----------------------------------------- |
-| `close`        | Closes (completes) the item in Todoist. |
-| `delete`       | Deletes the item in Todoist. |
-| `move`         | Moves the item in Todoist to the next section. If it's currently in the last section, item will be moved to the special "(No section)" section. |
-| `confirm`      | Opens a dialog box asking the user to confirm the action. If the user approves, action continues, otherwise it is cancelled. <br>Specify an optional string for a custom confirmation text. |
-| `toast`        | Flashes a message for a few seconds giving some information to the user. |
-| `update`       | Sets new values to the item's fields in Todoist. <br>This is a list which allows all Todoist field types: `content`, `description`, `priority`, `collapsed`, `assigned_by_uid`, `responsible_uid`, `day_order`<br>You can use variables here. One of the variables can be `%input%` which will cause the user to be prompted for the value. use `prompt_texts` to control the dialog box displayed. |
-| `prompt_texts` | Not really an action, but you can use this to set a couple of strings to be used in other actions. <br>Use two strings separated by the `\|` character. The first will be the dialog box title, the second will be the default value presented in the input box. The variable `%content%` will be useful here to show the current value. <br>So, for example, `"Insert new name:\|%content%"` will set the prompt for an update action that references `%input%` , asking the user to give a new name, showing the current name in the input box, so it can be easily edited. |
-| `automation`   | Runs the specified automation in Home Assistant. This is very powerful! It is the action that contains a thousand possibilities! 🚀 <br>And this is what makes the PowerTodoist card really a Home Assistant thing - not just an interface to your Todoist. |
-| `label`        | Here `label` is a verb! You use this action to label the current item as you prefer. <br>Use a list of label names. If you prefix a label name with a `!` that label will be removed, instead of added. Use `!*` to clear all labels. |
+| **`close`**        | Closes (completes) the item in Todoist. |
+| **`delete`**       | Deletes the item in Todoist. |
+| **`move`**         | Moves the item in Todoist to the next section. If it's currently in the last section, item will be moved to the special "(No section)" section. |
+| **`confirm`**      | Opens a dialog box asking the user to confirm the action. If the user approves, action continues, otherwise it is cancelled. <br>Specify an optional string for a custom confirmation text. |
+| **`toast`**        | Flashes a message for a few seconds giving some information to the user. |
+| **`update`**       | Sets new values to the item's fields in Todoist. <br>This is a list which allows all Todoist field types: `content`, `description`, `priority`, `collapsed`, `assigned_by_uid`, `responsible_uid`, `day_order`<br>You can use variables here. One of the variables can be `%input%` which will cause the user to be prompted for the value. use `prompt_texts` to control the dialog box displayed. |
+| **`prompt_texts`** | Not really an action, but you can use this to set a couple of strings to be used in other actions. <br>Use two strings separated by the `\|` character. The first will be the dialog box title, the second will be the default value presented in the input box. The variable `%content%` will be useful here to show the current value. <br>So, for example, `"Insert new name:\|%content%"` will set the prompt for an update action that references `%input%` , asking the user to give a new name, showing the current name in the input box, so it can be easily edited. |
+| **`automation`**   | Runs the specified automation in Home Assistant. This is very powerful! It is the action that contains a thousand possibilities! 🚀 <br>And this is what makes the PowerTodoist card really a Home Assistant thing - not just an interface to your Todoist. |
+| **`label`**        | Here `label` is a verb! You use this action to label the current item as you prefer. <br>Use a list of label names. If you prefix a label name with a `!` that label will be removed, instead of added. Use `!*` to clear all labels. |
 
 The items in this **Actions** table must always appear below a user **Event** from the previous table, like this:
 ```
@@ -183,14 +186,14 @@ Actions are executed in the order given. If you include a list of actions for an
 
 This feature is undergoing a major re-factoring and might not work perfectly well in all places. But the general idea is that you can use these in any configuration option and they will get substituted, if the value is available (makes sense in that context). In case of doubt, just try it and see how it goes.
 
-| Variable name                 |   Text that will be substituted | 
+| **Variable name**                 |   Text that will be substituted | 
 | -------------------------------------- | ----------------------------------------- |
-| `%was%`   | Previous value |
-| `%input%`   | Value returned from a prompt shown to the user. The prompt can be customized with `prompt_texts` action. |
-| `%line%`   | A new line character. Allows breaking lines in places where it would be difficult to add a new line in YAML. |
-| `%user%`   | The current Home Assistant user name. This is also super powerful to build multi-user systems. You can create separate lists per user, and you can use labels with user names to move things from one to the other. Note that this is not the Todoist user names; it is meant for use with a single Todoist user, the trick is to use labels or sections to separate tasks by HASS users. |
-| `%date%`   | The current date, formatted as specified by the `date_format` option. <br>Default format is `"mmm dd H:mm"`<br>Complete formatting options are documented [here](https://blog.stevenlevithan.com/archives/javascript-date-format). |
-| `%str_labels%`   | The current items labels, all concatenated as a comma-separated string. |
+| **`%was%`**   | Previous value |
+| **`%input%`**   | Value returned from a prompt shown to the user. The prompt can be customized with `prompt_texts` action. |
+| **`%line%`**   | A new line character. Allows breaking lines in places where it would be difficult to add a new line in YAML. |
+| **`%user%`**   | The current Home Assistant user name. This is also super powerful to build multi-user systems. You can create separate lists per user, and you can use labels with user names to move things from one to the other. Note that this is not the Todoist user names; it is meant for use with a single Todoist user, the trick is to use labels or sections to separate tasks by HASS users. |
+| **`%date%`**   | The current date, formatted as specified by the `date_format` option. <br>Default format is `"mmm dd H:mm"`<br>Complete formatting options are documented [here](https://blog.stevenlevithan.com/archives/javascript-date-format). |
+| **`%str_labels%`**   | The current items labels, all concatenated as a comma-separated string. |
 
 Let me know if you have other ideas for variables that could prove useful.
 
@@ -215,7 +218,7 @@ Copyright for portions of project PowerTodoist-card are held by [Konstantin Grin
 
 # Sponsor me, please!
 
-If you enjoy and use this card, I'd appreciate it if you can sponsor my work. I'm actually trying to make a living from Github sponsorships, mostly from other projects, but Home Assistant users are numerous, every small donation will also help! Thanks, I really appreciate it!
+That was a lot of work 😅! If you enjoy and use this card, I'd appreciate it if you can sponsor my work. I'm actually trying to make a living from Github sponsorships, mostly from other projects, but Home Assistant users are numerous, every small donation will also help! Thanks, I really appreciate it!
 
 [![](https://img.shields.io/static/v1?label=Sponsor&message=%E2%9D%A4&logo=GitHub&color=%23fe8e86)](https://github.com/sponsors/pgorod)
 
