@@ -73,18 +73,18 @@ This card can be configured using Lovelace UI editor.
           Authorization: !secret todoist_api_token
         content_type: 'application/x-www-form-urlencoded'
     ```
-    👉 The REST command is constant and needs to be defined only once for each Todoist account used (I recommend using only one and handling any content separation with cleverly filtered projects, sections, and labels).
+    👉 The REST command and the `label_colors` sensor are constant and need to be defined only once for each Todoist account used (I recommend using only one and handling any content separation with cleverly filtered projects, sections, and labels).
     
     👉 The Sensor definition, on the other hand, can be cloned to allow for different projects, just make sure you set a unique entity name, and set the appropriate `TODOIST_PROJECT_ID` for each one (see below).
-2. ... and to `secrets.yaml`:
+2. In that `configuration.yaml`, replace `TODOIST_PROJECT_ID` with ID of your selected Todoist project.
+    > You can get `TODOIST_PROJECT_ID` from project URL, which usually looks like this:
+    `https://todoist.com/app/project/TODOIST_PROJECT_ID`
+3. Add this to `secrets.yaml`:
     ```yaml
     todoist_api_token: 'Bearer TODOIST_API_TOKEN'
     todoist_cmd_with_api_token: 'echo "{\"label_colors\":" $(curl -s https://api.todoist.com/rest/v2/labels -H "Accept: application/json" -H "Authorization: Bearer TODOIST_API_TOKEN") "}" '
     ```
-3. In `secrets.yaml`, replace two instances of `TODOIST_API_TOKEN` with your private [API Token](https://todoist.com/prefs/integrations/developer).
-4. In `configuration.yaml`, replace `TODOIST_PROJECT_ID` with ID of your selected Todoist project.
-    > You can get `TODOIST_PROJECT_ID` from project URL, which usually looks like this:
-    `https://todoist.com/app/project/TODOIST_PROJECT_ID`
+4. In that `secrets.yaml`, replace two instances of `TODOIST_API_TOKEN` with your private [API Token](https://todoist.com/prefs/integrations/developer).
 5. Reload configs or restart Home Assistant.
 6. In Lovelace UI, click 3 dots in top left corner.
 7. Click _Edit Dashboard_.
