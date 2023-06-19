@@ -84,12 +84,12 @@ This card can be configured using Lovelace UI editor.
     todoist_api_token: 'Bearer TODOIST_API_TOKEN'
     todoist_cmd_with_api_token: 'echo "{\"label_colors\":" $(curl -s https://api.todoist.com/rest/v2/labels -H "Accept: application/json" -H "Authorization: Bearer TODOIST_API_TOKEN") "}" '
     ```
-4. In that `secrets.yaml`, replace two instances of `TODOIST_API_TOKEN` with your private [API Token](https://todoist.com/prefs/integrations/developer).
+4. In that `secrets.yaml`, replace two instances of `TODOIST_API_TOKEN` with your private [API Token](https://todoist.com/prefs/integrations) (click `Developer` tab on that page).
 5. Reload configs or restart Home Assistant.
-6. In Lovelace UI, click 3 dots in top left corner.
+6. In Lovelace UI, click 3 dots in top-right corner.
 7. Click _Edit Dashboard_.
 8. Click _Add Card_ button in the bottom right corner to add a new card.
-9. Find _Custom: Todoist Card_ in the list.
+9. Find _Custom: PowerTodoist Card_ in the list.
 10. Choose `entity`.
 11. Now you should see the preview of the card!
 
