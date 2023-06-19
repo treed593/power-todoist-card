@@ -140,7 +140,7 @@ The `filter_labels` option allows for several possibilities.
 - use a special label called `!*` to include items without any labels at all.
 - you can combine lines with any of the above filters to join these conditions (for nerds, this will be a logical OR of the inclusion filters, but the exclusion filters always defeat anything else).
 
-| Filters                 |   Meaning |
+| Label Filter examples                 |   Meaning |
 | --------------------------------------------------- | ------------------------------------------------- |
 | `filter_labels:`<br>`  - "Blue"`<br>`  - "Green"`    | Shows items with either a `Green` or a `Blue` label, or both. |
 | `filter_labels:`<br>`  - "!Done"`   | Shows items that don't have a `Done` label. |
