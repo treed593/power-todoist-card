@@ -216,6 +216,31 @@ Let me know if you have other ideas for variables that could prove useful.
 Have a look at this demo file: 
 https://github.com/pgorod/power-todoist-card/blob/main/todoist_demo.yaml
 
+## Adding Tasks from Automation
+
+- Create an automation with whatever triggers and conditions you want. 
+- For the **actions**, use **Call Service** 
+- Then you should have an option available called **`RESTful command: todoist`** (internally, `rest_command.todoist` which you defined in `configuration.yaml`). 
+- Enter the following in the **Service data** box:
+```
+service: rest_command.todoist
+data:
+  url: quick/add
+  payload: "text=Auto created at ({{ now().strftime('%H:%M') }}) #myproject @mylabel"
+```
+You can use the full power of Todoist's Quick add feature that will parse the text of the task to be created. It can include...
+- due date (in free form text)
+- #project
+- @label
+- +assignee
+- /section
+- // description (at the end)
+- p2 priority
+
+To get this right, I suggest you try your text first directly in the Todoist app, before moving it into the HASS automation.
+
+You can also use the power of Home Assistant's templating language enclosed in `{{ }}` brackets, as my example shows.
+
 ## Kanbans and Multiple task lists
 
 You can use as many of these cards as you want in your dashboards, of course. But I find that this looks particularly cool, and works in a particularly functional way, if you combine this card with the HACS [Swipe card](https://github.com/bramkragten/swipe-card). Just have a card for each Todoist section, and put them all together in a Swipe card, to get the feeling of a Kanban. Use the `move` action to move items to the next card.
