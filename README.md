@@ -1,8 +1,8 @@
 # PowerTodoist Card
 
 [![hacs_badge](https://img.shields.io/badge/HACS-Default-orange.svg)](https://github.com/hacs/integration)
-![hacs_badge](https://img.shields.io/github/v/release/grinstantin/todoist-card)
-![hacs_badge](https://img.shields.io/github/license/grinstantin/todoist-card)
+![hacs_badge](https://img.shields.io/github/v/release/pgorod/power-todoist-card)
+![hacs_badge](https://img.shields.io/github/license/pgorod/power-todoist-card)
 
 PowerTodoist card for [Home Assistant](https://www.home-assistant.io) Lovelace UI. This card displays items from selected Todoist projects.
 
