@@ -103,9 +103,9 @@ class PowerTodoistCardEditor extends LitElement {
         return true;
     }
 
-    get _only_today_overdue() {
+    get _filter_today_overdue() {
         if (this.config) {
-            return this.config.only_today_overdue || false;
+            return this.config.filter_today_overdue || false;
         }
         
         return false;
@@ -275,8 +275,8 @@ class PowerTodoistCardEditor extends LitElement {
 
             <div class="option">
                 <ha-switch
-                    .checked=${(this.config.only_today_overdue !== undefined) && (this.config.only_today_overdue !== false)}
-                    .configValue=${'only_today_overdue'}
+                    .checked=${(this.config.filter_today_overdue !== undefined) && (this.config.filter_today_overdue !== false)}
+                    .configValue=${'filter_today_overdue'}
                     @change=${this.valueChanged}
                 >
                 </ha-switch>
@@ -430,14 +430,17 @@ class PowerTodoistCard extends LitElement {
     
     parseConfig(srcConfig) {
         var parsedConfig;
+        let project_notes = "";
         let myStrConfig = JSON.stringify(srcConfig);
         let date_formatted = (new Date()).format(srcConfig["date_format"] || "mmm dd H:mm");
+        try { project_notes = state.attributes.project_notes[0].content;} catch (error) { }
         const strLabels =  (typeof(item) !== "undefined" && item.labels) ? JSON.stringify(item.labels) : "";
 
         var mapReplaces = {
-            "%user%": this.hass ? this.hass.user.name : "",
-            "%date%": `${date_formatted}`,
-            "%str_labels%" : strLabels,
+            "%project_notes%" : project_notes ,
+            "%user%"          : this.hass ? this.hass.user.name : "",
+            "%date%"          : `${date_formatted}`,
+            "%str_labels%"    : strLabels,
         };
 
         myStrConfig = replaceMultiple(myStrConfig, mapReplaces);
@@ -715,7 +718,7 @@ class PowerTodoistCard extends LitElement {
             : ["checkbox-marked-circle-outline", "circle-medium", "plus-outline", "trash-can-outline"]; 
         
         let items = state.attributes.items || [];
-        if (this.config.only_today_overdue) {
+        if (this.config.filter_today_overdue) {
             items = items.filter(item => {
                 if (item.due) {
                     if (/^\d{4}-\d{2}-\d{2}$/.test(item.due.date)) {
@@ -739,8 +742,8 @@ class PowerTodoistCard extends LitElement {
                 return 0;
             });
         }
-        if (this.config.custom_days_filter && this.config.custom_days_filter !== -1) {
-            const days_out = this.config.custom_days_filter;
+        if (this.config.filter_due_days_out && this.config.filter_due_days_out !== -1) {
+            const days_out = this.config.filter_due_days_out;
             items = items.filter(item => {
                 if (item.due) {
                     if (/^\d{4}-\d{2}-\d{2}$/.test(item.due.date)) {
@@ -754,13 +757,13 @@ class PowerTodoistCard extends LitElement {
 
         // filter by section:
         let section_name2id = [];
-        if (!this.config.section_id && this.config.section) {
+        if (!this.config.filter_section_id && this.config.filter_section) {
             //let state = this.hass.states[this.config.entity].attributes;
             state.attributes.sections.map(s => {
                 section_name2id[s.name] = s.id;
             });            
         }
-        let section_id = this.config.section_id || section_name2id[this.config.section] || undefined;
+        let section_id = this.config.filter_section_id || section_name2id[this.config.filter_section] || undefined;
         if (section_id) {
             items = items.filter(item => {
                 return item.section_id === section_id;
@@ -771,11 +774,11 @@ class PowerTodoistCard extends LitElement {
         var includes, excludes;
         var cardLabels=[];
         var itemLabels=[];
-        if (this.myConfig.labels) {
+        if (this.myConfig.filter_labels) {
             items = items.filter(item => {
                 includes = excludes = 0;
                 //this.config.labels.forEach(label => {
-                this.myConfig.labels.forEach(label => {
+                this.myConfig.filter_labels.forEach(label => {
                     let l = label; //replaceMultiple(label, { "%user%" : this.hass.user.name });
                     if (l.startsWith("!")) {
                         excludes += item.labels.includes(l.slice(1));
@@ -789,7 +792,7 @@ class PowerTodoistCard extends LitElement {
     }
 
     // Starts with named section or default, tries to get section name from id, but lets friendly_name override it:
-    let cardName = this.config.section || "ToDoist";
+    let cardName = this.config.filter_section || "ToDoist";
     try { cardName = state.attributes.sections.find(s => { return s.id === section_id }).name } catch (error) { }       
     cardName = this.config.friendly_name || cardName;
 
