@@ -466,7 +466,8 @@ class PowerTodoistCard extends LitElement {
  
         let state = this.hass.states[this.config.entity].attributes;
         let date_formatted = (new Date()).format(this.myConfig["date_format"] || "mmm dd H:mm"); // moved to Parse, delete when not needed
-        let actions = this.config[button] !== undefined ? this.config[button] : []; 
+        // calling parseConfig here repeats some work, but is helpful because %user% variable and others are now available:
+        let actions = this.config[button] !== undefined ? this.parseConfig(this.config[button]) : []; 
         let automation = "", confirm = "", promptTexts = "", toast = "";
         let commands = [], updates = [], labelChanges = [],adds = [];
         try { automation   = actions.find(a => typeof a === 'object' && a.hasOwnProperty('automation')).automation || "";} catch (error) { }       
@@ -559,6 +560,16 @@ class PowerTodoistCard extends LitElement {
             }) - 1;
             // Move to next section. To move to "no section" Todoist expects a move to the project...:
             commands[newIndex].args[nextSection !== item.project_id ? "section_id" : "project_id"] = nextSection;
+        }
+
+
+        if (adds) {
+            adds.forEach((item) => {
+                this.hass.callService('rest_command', 'todoist', {
+                    url: 'quick/add',
+                    payload: 'text=' + item,
+                })
+            });
         }
 
         let default_actions = {
