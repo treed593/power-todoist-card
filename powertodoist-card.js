@@ -603,7 +603,7 @@ class PowerTodoistCard extends LitElement {
             if (!window.confirm(confirm)) 
                 return [ [] , "", "" ];
         }
-        if (allow && !allow.includes(this.hass.user.name)) {
+        if (allow.length && !allow.includes(this.hass.user.name)) {
             return [ [] , "", "" ];
         }
         
@@ -637,7 +637,8 @@ class PowerTodoistCard extends LitElement {
         let commands = [], automation = [];
         let toast = "";
         [commands, automation, toast] = this.buildCommands(item, "actions_" + action);
-        this.showToast(toast ? toast : action, 3000);
+        //this.showToast(toast ? toast : action, 3000);
+        this.showToast(toast, 3000);
 
         this.hass.callService('rest_command', 'todoist', {
                 url: 'sync',
