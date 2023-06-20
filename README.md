@@ -188,6 +188,7 @@ Under those headers, you can use a list of actions to specify custom behaviours.
 | **`automation`**   | Runs the specified automation in Home Assistant. This is very powerful! It is the action that contains a thousand possibilities! 🚀 <br>And this is what makes the PowerTodoist card really a Home Assistant thing - not just an interface to your Todoist. |
 | **`label`**        | Here `label` is a verb! You use this action to label the current item as you prefer. <br>Use a list of label names. If you prefix a label name with a `!` that label will be removed, instead of added. Use `!*` to clear all labels. |
 | **`add`**          | A list of texts that will be sent as **Quick Add** to Todoist. More details about the syntax [below](#adding_tasks_from_automation). Remember to specify Project, section and labels, as necessary to match your filters and ensure the new item is visible where you want it. |
+| **`allow`**        | A list of user names that will be allowed to execute all the actions in the handling of the current event. To allow everyone, simply don't use this option. |
 
 The items in this **Actions** table must always appear below a user **Event** from the previous table, like this:
 ```
