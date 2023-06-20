@@ -469,7 +469,7 @@ class PowerTodoistCard extends LitElement {
         // calling parseConfig here repeats some work, but is helpful because %user% variable and others are now available:
         let actions = this.config[button] !== undefined ? this.parseConfig(this.config[button]) : []; 
         let automation = "", confirm = "", promptTexts = "", toast = "";
-        let commands = [], updates = [], labelChanges = [],adds = [];
+        let commands = [], updates = [], labelChanges = [], adds = [], allow = [];
         try { automation   = actions.find(a => typeof a === 'object' && a.hasOwnProperty('automation')).automation || "";} catch (error) { }       
         try { confirm      = actions.find(a => typeof a === 'object' && a.hasOwnProperty('confirm')).confirm || "";} catch (error) { }       
         try { promptTexts  = actions.find(a => typeof a === 'object' && a.hasOwnProperty('prompt_texts')).prompt_texts || "";} catch (error) { }       
@@ -477,6 +477,7 @@ class PowerTodoistCard extends LitElement {
         try { labelChanges = actions.find(a => typeof a === 'object' && a.hasOwnProperty('label')).label || [];} catch (error) { }       
         try { toast        = actions.find(a => typeof a === 'object' && a.hasOwnProperty('toast')).toast || "";} catch (error) { }       
         try { adds         = actions.find(a => typeof a === 'object' && a.hasOwnProperty('add')).add || [];} catch (error) { }       
+        try { allow        = actions.find(a => typeof a === 'object' && a.hasOwnProperty('allow')).allow || [];} catch (error) { }       
 
         const strLabels =  JSON.stringify(item.labels); // moved to Parse, delete when not needed
         let labels = item.labels;
@@ -595,13 +596,17 @@ class PowerTodoistCard extends LitElement {
                   commands.push(default_actions["actions_" + a]);
         })
 
-        if   (!actions.length && default_actions[button]) 
+        if (!actions.length && default_actions[button]) 
             commands.push(default_actions[button]);
         
         if (confirm) {
             if (!window.confirm(confirm)) 
-               return [ [] , "", "" ];
+                return [ [] , "", "" ];
         }
+        if (allow && !allow.includes(this.hass.user.name)) {
+            return [ [] , "", "" ];
+        }
+        
         return [commands, automation, toast];
     }
 
@@ -713,7 +718,7 @@ class PowerTodoistCard extends LitElement {
     }
 
     render() {
-        //var myConfig = this.parseConfig(this.config);
+        this.myConfig = this.parseConfig(this.config);
         let state = this.hass.states[this.config.entity] || undefined;
         if (!state) {
            throw new Error("thrown by pgr: state undefined in render");
