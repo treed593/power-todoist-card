@@ -469,7 +469,7 @@ class PowerTodoistCard extends LitElement {
         // calling parseConfig here repeats some work, but is helpful because %user% variable and others are now available:
         let actions = this.config[button] !== undefined ? this.parseConfig(this.config[button]) : []; 
         let automation = "", confirm = "", promptTexts = "", toast = "";
-        let commands = [], updates = [], labelChanges = [], adds = [], allow = [];
+        let commands = [], updates = [], labelChanges = [], adds = [], allow = [], matches = [];
         try { automation   = actions.find(a => typeof a === 'object' && a.hasOwnProperty('automation')).automation || "";} catch (error) { }       
         try { confirm      = actions.find(a => typeof a === 'object' && a.hasOwnProperty('confirm')).confirm || "";} catch (error) { }       
         try { promptTexts  = actions.find(a => typeof a === 'object' && a.hasOwnProperty('prompt_texts')).prompt_texts || "";} catch (error) { }       
@@ -478,6 +478,7 @@ class PowerTodoistCard extends LitElement {
         try { toast        = actions.find(a => typeof a === 'object' && a.hasOwnProperty('toast')).toast || "";} catch (error) { }       
         try { adds         = actions.find(a => typeof a === 'object' && a.hasOwnProperty('add')).add || [];} catch (error) { }       
         try { allow        = actions.find(a => typeof a === 'object' && a.hasOwnProperty('allow')).allow || [];} catch (error) { }       
+        try { matches      = actions.find(a => typeof a === 'object' && a.hasOwnProperty('match')).match || [];} catch (error) { }       
 
         const strLabels =  JSON.stringify(item.labels); // moved to Parse, delete when not needed
         let labels = item.labels;
@@ -563,16 +564,6 @@ class PowerTodoistCard extends LitElement {
             commands[newIndex].args[nextSection !== item.project_id ? "section_id" : "project_id"] = nextSection;
         }
 
-
-        if (adds) {
-            adds.forEach((item) => {
-                this.hass.callService('rest_command', 'todoist', {
-                    url: 'quick/add',
-                    payload: 'text=' + item,
-                })
-            });
-        }
-
         let default_actions = {
             "actions_close" : { 'type': 'item_close', 'uuid': this.getUUID(), 'args': {'id': item.id} },
             "actions_dbl_close": {},
@@ -601,19 +592,25 @@ class PowerTodoistCard extends LitElement {
         
         if (confirm) {
             if (!window.confirm(confirm)) 
-                return [ [] , "", "" ];
+                return [ [] , [] , "", "" ];
         }
         if (allow.length && !allow.includes(this.hass.user.name)) {
-            return [ [] , "", "" ];
+            return [ [] , [] , "", "" ];
         }
-        
-        return [commands, automation, toast];
+
+        matches.forEach(([field, value, subActions]) => {
+            //let field, value, subActions;
+            if ((Array.isArray(item[field]) && item[field].includes(value)) ||
+            item[field] == value)
+            this.itemAction(item, subActions);
+        })
+
+        return [commands, adds, automation, toast];
     }
 
     async showToast(message, duration, defer = 0) {
-        //if (defer)
-           //await new Promise(resolve => setTimeout(resolve, defer));
-        //const toast = this.getElementById('todoist-toast');
+        if (!message) return;
+
         const toast = this.shadowRoot.querySelector("#todoist-toast");
         if (toast) {
             setTimeout(() => {
@@ -629,17 +626,30 @@ class PowerTodoistCard extends LitElement {
         }
     }
 
+    async processAdds(adds) {
+        for (const item of adds) {
+            this.hass.callService('rest_command', 'todoist', {
+                url: 'quick/add',
+                payload: 'text=' + item,
+            });
+        }
+    }
+
     itemAction(item, action) {
         //var myConfig = this.parseConfig(this.config);
 
         if (item === undefined) return; // will happen when renderLabels is used for the card-level labels
         action = action.toLowerCase();
-        let commands = [], automation = [];
+        let commands = [], adds = [], automation = [];
         let toast = "";
-        [commands, automation, toast] = this.buildCommands(item, "actions_" + action);
+        [commands, adds, automation, toast] = this.buildCommands(item, "actions_" + action);
         //this.showToast(toast ? toast : action, 3000);
         this.showToast(toast, 3000);
 
+        // deal with adds (this runs asynchronously to avoid blocking us)
+        this.processAdds(adds);
+
+        // deal with commands:
         this.hass.callService('rest_command', 'todoist', {
                 url: 'sync',
                 payload: 'commands=' + JSON.stringify(commands),
@@ -670,6 +680,7 @@ class PowerTodoistCard extends LitElement {
                 } 
             });
 
+        // deal with automations:    
         if (automation.length) {
             this.hass.callService('automation', 'trigger', {
                 entity_id: 'automation.' + automation,
