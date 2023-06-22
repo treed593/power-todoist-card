@@ -42,6 +42,7 @@ cards:
         - "!Green"
       - automation: action_notify_sim
     actions_dbl_label:
+      - toast: "Toasted! 🍞"
       - label:
         - "!*"
     actions_delete:
@@ -49,6 +50,19 @@ cards:
       - label:
         - "Charcoal"
       - delete
+    actions_dbl_delete:
+      - allow: ["user1", "user2"]
+      - match: 
+        - ["labels", "Blue", "matched_bluesy"]
+        - ["content", "Clear backlog", "matched_somecontent"]
+      - label:
+        - "!%user%"
+      - add:
+        - "Created from Action #myProject @%user%"
+    actions_matched_somecontent:
+      - toast: "‼ Matched content ‼"    
+    actions_matched_bluesy:
+      - toast: "‼ Matched label ‼"    
     show_item_add: true
     show_item_delete: true
     show_completed: 5
