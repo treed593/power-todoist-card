@@ -173,6 +173,7 @@ But with this card, almost everything is programmable :-), so in the configurati
 | actions_dbl_delete | A double-tap on the delete button to the right of the task. | Nothing |
 | **actions_uncomplete** | A tap on the task uncomplete button on a recently completed task (shown at the bottom). | Undo the task completion of a recently completed task. |
 | actions_dbl_uncomplete | A double-tap on the task uncomplete button on a recently completed task (shown at the bottom). | Nothing |
+| **actions_**_yourActionName_ | Not really a user event, but rather a way to add your own "sub-routines" (as many as you want). <br>Just give them unique names such as `action_domystuff` and list any desired actions inside.<br>The way to call these subroutines from other places is by using the `match` action (see below). <br>So a typical flow would be a user event such as `action_close` includes a `match` action, which then conditionally triggers `action_domystuff`. | Nothing |
 
 Under those headers, you can use a list of actions to specify custom behaviours. Your options for the actions are:
 
@@ -189,6 +190,7 @@ Under those headers, you can use a list of actions to specify custom behaviours.
 | **`label`**        | Here `label` is a verb! You use this action to label the current item as you prefer. <br>Use a list of label names. If you prefix a label name with a `!` that label will be removed, instead of added. Use `!*` to clear all labels. |
 | **`add`**          | A list of texts that will be sent as **Quick Add** to Todoist. More details about the syntax [below](#adding_tasks_from_automation). Remember to specify Project, section and labels, as necessary to match your filters and ensure the new item is visible where you want it. |
 | **`allow`**        | A list of user names that will be allowed to execute all the actions in the handling of the current event. To allow everyone, simply don't use this option. |
+| **`match`**        | A list of triplets that describe conditions. Each triplet looks like this: **`[field, value, action_domystuff]`**.<br>The **field** is one of the item fields as listed [here](https://developer.todoist.com/sync/v9/#items). <br>The **value** will be matched to that field (simple fields get simple comparisons, while array fields test if the value is included in the array). <br>If there is a match, then the custom **action** gets executed. This is a very powerful way of creating conditions to invoke subroutines when handling an event, allowing you to do different things for different users, or according to some label on the item.<br>Note that not everything is tested, and not everything will work, there are many scenarios and data types, and I am not building a full programming language here... but even the basic usage will prove very useful. |
 
 The items in this **Actions** table must always appear below a user **Event** from the previous table, like this:
 ```
