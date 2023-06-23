@@ -212,6 +212,7 @@ This feature is undergoing a major re-factoring and might not work perfectly wel
 | **`%user%`**   | The current Home Assistant user name. This is also super powerful to build multi-user systems. You can create separate lists per user, and you can use labels with user names to move things from one to the other. Note that this is not the Todoist user names; it is meant for use with a single Todoist user, the trick is to use labels or sections to separate tasks by HASS users. |
 | **`%date%`**   | The current date, formatted as specified by the `date_format` option. <br>Default format is `"mmm dd H:mm"`<br>Complete formatting options are documented [here](https://blog.stevenlevithan.com/archives/javascript-date-format). |
 | **`%str_labels%`**   | The current items labels, all concatenated as a comma-separated string. |
+| **`%project_notes%`**   | In Todoist, you can add notes at the Project level, not just at the item level. <br>You can access the first of these notes with this variable. You can also use **`%project_notes_2%`**, **`%project_notes_3%`**, etc, to access the other notes. |
 
 Let me know if you have other ideas for variables that could prove useful.
 
