@@ -310,6 +310,7 @@ class PowerTodoistCard extends LitElement {
         super();
 
         this.itemsJustCompleted = [];
+        this.itemsEmphasized = [];
         this.toastText = "";
         this.myConfig = {};
     }
@@ -397,7 +398,15 @@ class PowerTodoistCard extends LitElement {
                         // // description (at the end)
                         // p2 priority
 
-                        let qa = value; // + ' #' + state.attributes.project.name.replaceAll(' ','');
+                        var qa = value;
+                        try {
+                            if (this.myConfig.filter_section && !qa.includes('/'))
+                                qa = qa + ' /' + this.myConfig.filter_section.replaceAll(' ','');
+                        } catch (error) { }
+                        try {
+                            if (state.attributes.project.name && !qa.includes('#'))
+                                qa = qa + ' #' + state.attributes.project.name.replaceAll(' ','');
+                        } catch (error) { }
                         this.hass
                             .callService('rest_command', 'todoist', {
                                 url: 'quick/add',
@@ -430,18 +439,21 @@ class PowerTodoistCard extends LitElement {
     
     parseConfig(srcConfig) {
         var parsedConfig;
-        let project_notes = "";
+        var project_notes = [];
         let myStrConfig = JSON.stringify(srcConfig);
         let date_formatted = (new Date()).format(srcConfig["date_format"] || "mmm dd H:mm");
-        try { project_notes = state.attributes.project_notes[0].content;} catch (error) { }
+        try { project_notes = this.hass.states[this.config.entity].attributes['project_notes'];} catch (error) { }
         const strLabels =  (typeof(item) !== "undefined" && item.labels) ? JSON.stringify(item.labels) : "";
 
         var mapReplaces = {
-            "%project_notes%" : project_notes ,
             "%user%"          : this.hass ? this.hass.user.name : "",
             "%date%"          : `${date_formatted}`,
             "%str_labels%"    : strLabels,
         };
+        project_notes.forEach(function (value, index) {
+            mapReplaces["%project_notes_" + index - 1 + '%'] = value.content;
+            if (index==0) mapReplaces["%project_notes%"] = value.content;
+        });
 
         myStrConfig = replaceMultiple(myStrConfig, mapReplaces);
         try {
@@ -469,7 +481,7 @@ class PowerTodoistCard extends LitElement {
         // calling parseConfig here repeats some work, but is helpful because %user% variable and others are now available:
         let actions = this.config[button] !== undefined ? this.parseConfig(this.config[button]) : []; 
         let automation = "", confirm = "", promptTexts = "", toast = "";
-        let commands = [], updates = [], labelChanges = [], adds = [], allow = [], matches = [];
+        let commands = [], updates = [], labelChanges = [], adds = [], allow = [], matches = [], emphasis = [];
         try { automation   = actions.find(a => typeof a === 'object' && a.hasOwnProperty('automation')).automation || "";} catch (error) { }       
         try { confirm      = actions.find(a => typeof a === 'object' && a.hasOwnProperty('confirm')).confirm || "";} catch (error) { }       
         try { promptTexts  = actions.find(a => typeof a === 'object' && a.hasOwnProperty('prompt_texts')).prompt_texts || "";} catch (error) { }       
@@ -479,6 +491,7 @@ class PowerTodoistCard extends LitElement {
         try { adds         = actions.find(a => typeof a === 'object' && a.hasOwnProperty('add')).add || [];} catch (error) { }       
         try { allow        = actions.find(a => typeof a === 'object' && a.hasOwnProperty('allow')).allow || [];} catch (error) { }       
         try { matches      = actions.find(a => typeof a === 'object' && a.hasOwnProperty('match')).match || [];} catch (error) { }       
+        try { emphasis     = actions.find(a => typeof a === 'object' && a.hasOwnProperty('emphasis')).emphasis || [];} catch (error) { }       
 
         const strLabels =  JSON.stringify(item.labels); // moved to Parse, delete when not needed
         let labels = item.labels;
@@ -552,6 +565,15 @@ class PowerTodoistCard extends LitElement {
             });
         }
 
+
+
+        
+        if (emphasis.length) {
+            this.itemsEmphasized[item.id]="special";
+        }
+
+
+
         if (actions.includes("move")) {
             let newIndex = commands.push({
                 "type": "item_move",
@@ -599,7 +621,6 @@ class PowerTodoistCard extends LitElement {
         }
 
         matches.forEach(([field, value, subActions]) => {
-            //let field, value, subActions;
             if ((Array.isArray(item[field]) && item[field].includes(value)) ||
             item[field] == value)
             this.itemAction(item, subActions);
@@ -611,7 +632,7 @@ class PowerTodoistCard extends LitElement {
     async showToast(message, duration, defer = 0) {
         if (!message) return;
 
-        const toast = this.shadowRoot.querySelector("#todoist-toast");
+        const toast = this.shadowRoot.querySelector("#powertodoist-toast");
         if (toast) {
             setTimeout(() => {
                 toast.innerText = toast.innerText + ' ' + message;
@@ -625,6 +646,22 @@ class PowerTodoistCard extends LitElement {
             },  duration + 1000);
         }
     }
+
+    async clearSpecialCSS(duration) {
+    
+        //var element = this.shadowRoot.querySelector(".powertodoist-item-content");
+        
+        var specials=this.shadowRoot.querySelectorAll(".powertodoist-special");
+        specials.forEach(s => {
+            setTimeout(() => {
+                s.classList.remove("powertodoist-special");
+                //s.innerText = 'cleared';
+                // clear up all items
+                this.itemsEmphasized = [];    
+            }, duration);
+        }); 
+    }
+
 
     async processAdds(adds) {
         for (const item of adds) {
@@ -801,6 +838,7 @@ class PowerTodoistCard extends LitElement {
         // filter by label:
         var includes, excludes;
         var cardLabels=[];
+        var hiddenLabels=[];
         var itemLabels=[];
         if (this.myConfig.filter_labels) {
             items = items.filter(item => {
@@ -826,6 +864,7 @@ class PowerTodoistCard extends LitElement {
 
 // https://lit.dev/docs/v1/lit-html/writing-templates/#repeating-templates-with-looping-statements
 
+    this.clearSpecialCSS(2000);
 
     return html`<ha-card>
         ${(this.config.show_header === undefined) || (this.config.show_header !== false)
@@ -837,7 +876,7 @@ class PowerTodoistCard extends LitElement {
                 }
                 </div>
                 </h1>
-                <div id="todoist-toast">${this.toastText}</div>`
+                <div id="powertodoist-toast">${this.toastText}</div>`
             : html``}
         <div class="powertodoist-list">
             ${items.length
@@ -855,7 +894,7 @@ class PowerTodoistCard extends LitElement {
                                     @click=${() => this.itemAction(item, "content")} 
                                     @dblclick=${() => this.itemAction(item, "dbl_content")}
                             >
-                                <span class="powertodoist-item-content" >
+                                <span class="powertodoist-item-content ${(this.itemsEmphasized[item.id]) ? css`powertodoist-special` : css``}" >
                                 ${item.content}</span></div>
                                 ${item.description
                                     ? html`<div
@@ -863,7 +902,10 @@ class PowerTodoistCard extends LitElement {
                                         @dblclick=${() => this.itemAction(item, "dbl_description")}   
                                     ><span class="powertodoist-item-description">${item.description}</span></div>`
                                     : html`` }
-                                ${this.renderLabels(item, item.labels, (cardLabels.length == 1 ? cardLabels : []), label_colors)}
+                                ${this.renderLabels(item, item.labels, 
+                                    [...(cardLabels.length == 1 ? cardLabels : []), // card labels excluded unless more than one
+                                     ...item.labels.filter(l => l.startsWith("_"))], // "_etc" labels excluded
+                                    label_colors) }
                             </div>
                             ${(this.config.show_item_delete === undefined) || (this.config.show_item_delete !== false)
                                 ? html`<ha-icon-button
@@ -1000,6 +1042,10 @@ class PowerTodoistCard extends LitElement {
                 margin: -6px 0 -6px;
                                  /* border: 1px solid red; border-width: 1px 1px 1px 1px; */
             }
+            .powertodoist-special {
+                font-weight: bolder;
+                color: darkred;
+            }
 
             .powertodoist-item-description {
                 display: block;
@@ -1081,7 +1127,7 @@ class PowerTodoistCard extends LitElement {
                 border-left: 1px dotted white;
                 outline: none;
             }
-            #todoist-toast {
+            #powertodoist-toast {
                 position: relative;
                 bottom: 20px;
                 left: 40%;
