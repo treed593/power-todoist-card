@@ -407,6 +407,7 @@ class PowerTodoistCard extends LitElement {
                             if (state.attributes.project.name && !qa.includes('#'))
                                 qa = qa + ' #' + state.attributes.project.name.replaceAll(' ','');
                         } catch (error) { }
+
                         this.hass
                             .callService('rest_command', 'todoist', {
                                 url: 'quick/add',
@@ -441,7 +442,8 @@ class PowerTodoistCard extends LitElement {
         var parsedConfig;
         var project_notes = [];
         let myStrConfig = JSON.stringify(srcConfig);
-        let date_formatted = (new Date()).format(srcConfig["date_format"] || "mmm dd H:mm");
+        let date_formatted = (new Date()).format(this.myConfig["date_format"] || "mmm dd H:mm"); 
+//        let date_formatted = (new Date()).format(srcConfig["date_format"] || "mmm dd H:mm");
         try { project_notes = this.hass.states[this.config.entity].attributes['project_notes'];} catch (error) { }
         const strLabels =  (typeof(item) !== "undefined" && item.labels) ? JSON.stringify(item.labels) : "";
 
@@ -477,7 +479,6 @@ class PowerTodoistCard extends LitElement {
     buildCommands(item, button = "actions_close") {
  
         let state = this.hass.states[this.config.entity].attributes;
-        let date_formatted = (new Date()).format(this.myConfig["date_format"] || "mmm dd H:mm"); // moved to Parse, delete when not needed
         // calling parseConfig here repeats some work, but is helpful because %user% variable and others are now available:
         let actions = this.config[button] !== undefined ? this.parseConfig(this.config[button]) : []; 
         let automation = "", confirm = "", promptTexts = "", toast = "";
@@ -496,6 +497,10 @@ class PowerTodoistCard extends LitElement {
         const strLabels =  JSON.stringify(item.labels); // moved to Parse, delete when not needed
         let labels = item.labels;
         if (labelChanges.includes("!*")) labels = []; // use !* to clear all    
+        if (labelChanges.includes("!_")) labels =     // use !_ to clear all labels starting with _   
+            labels.filter(function(label) { return label[0] !== '_'; }); 
+        if (labelChanges.includes("!!")) labels =     // use !! to clear all labels NOT starting with _   
+            labels.filter(function(label) { return label[0] === '_'; }); 
         labelChanges.map(change => {
             if (change.startsWith("!")) {
                 if (labels.includes(change.slice(1))) labels = labels.filter(e => e !== change.slice(1)); // remove it
@@ -536,9 +541,10 @@ class PowerTodoistCard extends LitElement {
                 input = window.prompt(questionText, defaultText) || "";
         }
 
+        let date_formatted2 = (new Date()).format(this.myConfig["date_format"] || "mmm dd H:mm"); // moved to Parse, delete when not needed
         var mapReplaces = {    // OLD OLD OLD
             "%user%": this.hass.user.name,
-            "%date%": `${date_formatted}`,
+            "%date%": `${date_formatted2}`,
             "%str_labels%" : strLabels,
         };
 
@@ -569,7 +575,8 @@ class PowerTodoistCard extends LitElement {
 
         
         if (emphasis.length) {
-            this.itemsEmphasized[item.id]="special";
+            this.emphasizeItem(item, emphasis);
+            //this.itemsEmphasized[item.id]="special";
         }
 
 
@@ -647,8 +654,18 @@ class PowerTodoistCard extends LitElement {
         }
     }
 
-    async clearSpecialCSS(duration) {
-    
+    emphasizeItem(item, className) {
+        var itemNode = this.shadowRoot.querySelector("#item_" + item.id);
+        if (itemNode) {
+            itemNode.classList.add("powertodoist-" + className);
+            setTimeout(() => {
+                itemNode.classList.remove("powertodoist-" + className);
+            }, 3000);
+        }
+    }
+
+    async clearSpecialCSSNOTNOTNOT(duration) {
+    // this.hass.states[this.config.entity].last_updated 
         //var element = this.shadowRoot.querySelector(".powertodoist-item-content");
         
         var specials=this.shadowRoot.querySelectorAll(".powertodoist-special");
@@ -864,7 +881,7 @@ class PowerTodoistCard extends LitElement {
 
 // https://lit.dev/docs/v1/lit-html/writing-templates/#repeating-templates-with-looping-statements
 
-    this.clearSpecialCSS(2000);
+    //this.clearSpecialCSS(2000);
 
     return html`<ha-card>
         ${(this.config.show_header === undefined) || (this.config.show_header !== false)
@@ -881,7 +898,7 @@ class PowerTodoistCard extends LitElement {
         <div class="powertodoist-list">
             ${items.length
                 ? items.map(item => {
-                    return html`<div class="powertodoist-item">
+                    return html`<div class="powertodoist-item" .id=${"item_" + item.id}>
                         ${(this.config.show_item_close === undefined) || (this.config.show_item_close !== false)
                             ? html`<ha-icon-button
                                 class="powertodoist-item-close"
