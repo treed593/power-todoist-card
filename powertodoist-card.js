@@ -783,6 +783,29 @@ class PowerTodoistCard extends LitElement {
         });
     }
 
+
+    
+    // -----------------------------------------------------------------------------------------------------------------------
+    // -----------------------------------------------------------------------------------------------------------------------
+    // -----------------------------------------------------------------------------------------------------------------------
+    // -----------------------------------------------------------------------------------------------------------------------
+    // -----------------------------------------------------------------------------------------------------------------------
+    // -----------------------------------------------------------------------------------------------------------------------
+    // -----------------------------------------------------------------------------------------------------------------------
+    // -----------------------------------------------------------------------------------------------------------------------
+    // -----------------------------------------------------------------------------------------------------------------------
+    // -----------------------------------------------------------------------------------------------------------------------
+    // -----------------------------------------------------------------------------------------------------------------------
+    // -----------------------------------------------------------------------------------------------------------------------
+    // -----------------------------------------------------------------------------------------------------------------------
+    // -----------------------------------------------------------------------------------------------------------------------
+    // -----------------------------------------------------------------------------------------------------------------------
+    // -----------------------------------------------------------------------------------------------------------------------
+    // -----------------------------------------------------------------------------------------------------------------------
+    // -----------------------------------------------------------------------------------------------------------------------
+    // -----------------------------------------------------------------------------------------------------------------------
+    // -----------------------------------------------------------------------------------------------------------------------
+    
     render() {
         this.myConfig = this.parseConfig(this.config);
         let state = this.hass.states[this.config.entity] || undefined;
@@ -800,52 +823,97 @@ class PowerTodoistCard extends LitElement {
             : ["checkbox-marked-circle-outline", "circle-medium", "plus-outline", "trash-can-outline"]; 
         
         let items = state.attributes.items || [];
-        if (this.config.filter_today_overdue) {
-            items = items.filter(item => {
-                if (item.due) {
-                    if (/^\d{4}-\d{2}-\d{2}$/.test(item.due.date)) {
-                        item.due.date += 'T00:00:00';
-                    }
-                    return (new Date()).setHours(23, 59, 59, 999) >= (new Date(item.due.date)).getTime();
-                }
-                return false;
+
+        // due date handling is based on code from sw-carlos-sancristobal's fork.
+        if (this.myConfig.sort_by_due_date) {
+            items.sort((a, b) => {
+                if (!(a.due && b.due)) return 0;
+                if (this.myConfig.ascending_order)
+                    return (new Date(a.due.date)).getTime() - (new Date(b.due.date)).getTime();
+                else
+                    return (new Date(b.due.date)).getTime() - (new Date(a.due.date)).getTime();
             });
         }
 
-        // code from sw-carlos-sancristobal's fork:
-        if (this.config.sort_by_due_date) {
-            items.sort((a, b) => {
-                if (a.due && b.due) {                  
-                    if (this.config.ascending_order){ 
-                        return (new Date(a.due.date)).getTime() - (new Date(b.due.date)).getTime();
-                    }
-                    return (new Date(b.due.date)).getTime() - (new Date(a.due.date)).getTime();
+        if ((typeof this.myConfig.filter_show_dates_starting !== 'undefined') ||
+            (typeof this.myConfig.filter_show_dates_ending   !== 'undefined')) {
+            let startCompare = Number(this.myConfig.filter_show_dates_starting);
+            let endCompare   = Number(this.myConfig.filter_show_dates_ending);
+            if ((typeof this.myConfig.filter_show_dates_starting == 'string') && !isNaN(startCompare)) 
+                // we have a number provided as string, signaling days precision
+                startCompare = new Date().setHours(0, 0, 0, 0) + (startCompare * 24 * 60 * 60 * 1000);
+            else
+                startCompare = new Date().getTime() + (startCompare * 1 * 60 * 60 * 1000);
+            if ((typeof this.myConfig.filter_show_dates_ending == 'string') && !isNaN(endCompare)) 
+                // we have a number provided as string, signaling days precision
+                endCompare = new Date().setHours(23, 59, 59, 999) + (endCompare * 24 * 60 * 60 * 1000);
+            else
+                endCompare = new Date().getTime() + (endCompare * 1 * 60 * 60 * 1000);
+
+            var dItem, dItem1, dItem2;
+            items = items.filter(item => {
+                if (!item.due) return (this.myConfig.filter_show_dates_empty !== false);
+                let duration = 0;
+                if (item.duration) // the only way to set this is through the API...
+                   duration = item.duration.unit == 'day' ? // it's either 'day' or  'minute'
+                              (item.duration.amount * 24 * 60 * 60 * 1000) : 
+                              (item.duration.amount *  1 *  1 * 60 * 1000);
+
+                if( /^\d{4}-\d{2}-\d{2}$/.test(item.due.date)) {
+                    // adds time if missing
+                    dItem1 = (new Date(item.due.date + 'T23:59:59')).getTime();
+                    dItem2 = (new Date(item.due.date + 'T00:00:00')).getTime();
+                } else {
+                    dItem1 = (new Date(item.due.date)).getTime();
+                    dItem2 = dItem1;
                 }
-                return 0;
+
+                // 'duration' logic: items that are spread over more than just one point in time; 
+                // only used with start=0 and end=null, so you can use the due date for a start time, 
+                // using duration to "expire" the task
+                if (isNaN(endCompare) && duration) {             
+                    startCompare -= duration;
+                    endCompare = new Date().getTime();
+                }
+
+                let passStart = isNaN(startCompare) ? true : startCompare <= dItem1; // items passing out of view
+                let passEnd   = isNaN(endCompare)   ? true : endCompare   >= dItem2; // items coming in to view
+                return passStart && passEnd;
             });
         }
-        if (this.config.filter_due_days_out && this.config.filter_due_days_out !== -1) {
-            const days_out = this.config.filter_due_days_out;
+
+        if (this.myConfig.filter_today_overdue) { // tasks start showing on day when due, end showing never
+            items = items.filter(item => {        
+                if (!item.due) return false;
+                item.due.date += /^\d{4}-\d{2}-\d{2}$/.test(item.due.date) ? 'T00:00:00' : '' // adds time if missing
+                return (new Date()).setHours(23, 59, 59, 999) >= (new Date(item.due.date)).getTime();                
+            });
+        }
+
+        var dNowPlus;
+        if ((typeof this.myConfig.filter_due_days_out !== 'undefined') && this.myConfig.filter_due_days_out !== -1) {
+            // tasks start showing n days before due, end showing never
+            const days_out = this.myConfig.filter_due_days_out;
+            dNowPlus = days_out == 0 ? 
+                        new Date() + (days_out * 24 * 60 * 60 * 1000) :
+                        new Date().setHours(23, 59, 59, 999) + (days_out * 24 * 60 * 60 * 1000);
             items = items.filter(item => {
-                if (item.due) {
-                    if (/^\d{4}-\d{2}-\d{2}$/.test(item.due.date)) {
-                        item.due.date += 'T00:00:00';
-                    }
-                    return (new Date()).setHours(23, 59, 59, 999) + (days_out * 24 * 60 * 60 * 1000) >= (new Date(item.due.date)).getTime();
-                }
-                return false;
+                if (!item.due) return false;
+                item.due.date += /^\d{4}-\d{2}-\d{2}$/.test(item.due.date) ? 'T00:00:00' : '' // adds time if missing
+                dItem = (new Date(item.due.date)).getTime();
+                return dNowPlus >= dItem;
             });
         }
 
         // filter by section:
         let section_name2id = [];
-        if (!this.config.filter_section_id && this.config.filter_section) {
+        if (!this.myConfig.filter_section_id && this.myConfig.filter_section) {
             //let state = this.hass.states[this.config.entity].attributes;
             state.attributes.sections.map(s => {
                 section_name2id[s.name] = s.id;
             });            
         }
-        let section_id = this.config.filter_section_id || section_name2id[this.config.filter_section] || undefined;
+        let section_id = this.myConfig.filter_section_id || section_name2id[this.myConfig.filter_section] || undefined;
         if (section_id) {
             items = items.filter(item => {
                 return item.section_id === section_id;
