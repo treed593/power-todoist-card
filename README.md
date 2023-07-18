@@ -121,15 +121,17 @@ Spaces and hyphens turned into `_`, and everything became lowercase. In case of 
 | `sort_by_due_date`   | `boolean` | `false`      | Sort the tasks by their due date.   |
 | `friendly_name`      | `string` | `Todoist`      | The card name shown on top uses a somewhat elaborate logic: <br>the default is `Todoist`, if no name is specified. <br>But if a Section filter is specified, then that section name will be used instead. <br>Finally, if you do use the `friendly_name` option, it will override anything else.  |
 | `icons`   | `list` | ![image](https://github.com/pgorod/power-todoist-card/assets/15945027/793f8b01-4203-4e5a-81e1-785bb1d284a3) <br> ![image](https://github.com/pgorod/power-todoist-card/assets/15945027/2753b1ac-8e5a-42d7-b39d-6b30fb8fea2c) <br> ![image](https://github.com/pgorod/power-todoist-card/assets/15945027/5714d361-376b-4666-9ebf-a7611b13d0d4) <br> ![image](https://github.com/pgorod/power-todoist-card/assets/15945027/cc682901-ca9b-43e7-b1ba-e7eb276f66b4) | A list of 4 icon names from the [MDI Library](https://pictogrammers.com/library/mdi/), without the `mdi:`prefix. Icons will be used for the check mark of checkable items, the bullet of uncheckable items, the plus sign to add items, and the trash can to delete. <br>Defaults as shown are `["checkbox-marked-circle-outline", "circle-medium", "plus-outline", "trash-can-outline"]` |
-| `filter_today_overdue` | `boolean` | `false`      | Only show tasks that are overdue or due today.    |
-| `filter_due_days_out`       | `integer` | `-1`      | Show only items which have a due date within N days into the future. <br>Make it 0 as a special mode to _hide_ items precisely when they become due, down to the minute (I use this to "expire" daily tasks after a certain time of the day when they no longer make sense). <br>Using -1 disables this filter.   |
+when they become due, down to the minute (I use this to "expire" daily tasks after a certain time of the day when they no longer make sense). <br>Using -1 disables this filter.   |
 | `filter_section_id` | `integer` | `(none)`      | Only show tasks from one Todoist section, identified by its id.    |
 | `filter_section` | `string` | `(none)`      | Only show tasks from one Todoist section, identified by its name.  |
-| `filter_labels` | `list` | `(none)`      | Only show tasks with the specified Todoist labels. See below for details on this powerful option.    |
+| `filter_labels` | `list` | `(none)`      | Only show tasks with the specified Todoist labels. See **Filtering by Labels** below for details on this powerful option.    |
+| `filter_today_overdue` | `boolean` | `false`      | Only show tasks that are overdue or due today.    |
+| `filter_due_days_out`       | `integer` | `-1`      | Show only items which have a due date within N days into the future. <br>Make it 0 as a special mode to _hide_ items precisely | `filter_show_dates_starting`<br>`filter_show_dates_ending` | `integer` or `string` | `(none)`      | Only show tasks with the specified dates window. See **Filtering by Dates** below for details.    |
+| `filter_show_dates_empty` | `boolean` | `true`      | Defines whether tasks without any specified date pass the filter or not. See **Filtering by Dates** below for details.    |
 
 > Note that the completed tasks list is cleared when the page is refreshed.
 
-#### Filtering by labels
+#### Filtering by Labels
 
 Labels are colorful and beautiful. And useful! Define them in Todoist app, and don't forget to pick your favorite colors there - after some time, they will be picked up by PowerTodoist-card!
 
@@ -148,6 +150,26 @@ The `filter_labels` option allows for several possibilities.
 | `filter_labels:`<br>`  - "For%user%"`    | Shows items that have a label composed of the letters `For` and the current user name. For example, if user is called `Joe` then a label `ForJoe` would match. |
 
 When you filter by a single label, that label won't appear graphically under each item; instead, it will appear on the top, next to the list name.
+
+## Filtering by Dates
+
+The options governing date filters are very powerful but also quite hard to understand. I believe this is due to inherent ambiguities in the ways we think and talk about time. Things get swapped if we think about a condition from the pespective of the task that has a due date, or from the threshold that we specified for the comparison. And we want to specify relative times (3 hours before), but relative to what? And time moves. And when we say a "within a day" we might mean two things: any time tomorrow, or strictly up to 24 hours from now, but not 25...
+
+So, please bear with me and try to get into my term definitions. I promise I will provide a few **simple, ready to use examples in the end**, if the complexity is too much for you.
+
+**Basic notions**:
+- I decided to use options to configure a time window, that has a beginning and an end. The tasks that fall between these two moments will get shown in the list, the others will be filtered out.
+- Each of the bounds of this window is specified in relative terms to **now**. For example, I can say the window starts 8 hours before now, or a day after now.
+- Since the window is relative to now, it moves forward as time goes by. So the end of the window is what causes events to be admitted into the view, and the start of the window is what causes events to be _expired_ out of view.
+- Although in Todoist the date associated with a task is a "due" date, you don't necessarily have to use the tasks' dates like that. You can use them as start dates if you prefer.
+- Todoist has a secret "duration" attribute on each task, which (to my knowledge) can only be written and read through the API, programatically. You can use that for the filters.
+
+| Date Filter explanations and examples               |   Meaning |
+| --------------------------------------------------- | ------------------------------------------------- |
+| `filter_show_dates_begin`   | Defines the start of the dates window, which moves forward expiring tasks out of the view.<br>If you use a number (like `-8` or `24`) it is interpreted as a number of hours. If you use a string like `"1"` it is interpreted as a number of days.<br>If you omit this setting it won't filter anything, so tasks won't expire by date. |
+| `filter_show_dates_end`   | Defines the end of the dates window, which moves forward bringing new tasks into the view.<br>If you use a number (like `-8` or `24`) it is interpreted as a number of hours. If you use a string like `"1"` it is interpreted as a number of days.<br>If you omit this setting it won't filter anything, so all future tasks will be visible. |
+
+
 
 ## Handling Events with Actions
 
