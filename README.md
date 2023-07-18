@@ -126,7 +126,8 @@ when they become due, down to the minute (I use this to "expire" daily tasks aft
 | `filter_section` | `string` | `(none)`      | Only show tasks from one Todoist section, identified by its name.  |
 | `filter_labels` | `list` | `(none)`      | Only show tasks with the specified Todoist labels. See **Filtering by Labels** below for details on this powerful option.    |
 | `filter_today_overdue` | `boolean` | `false`      | Only show tasks that are overdue or due today.    |
-| `filter_due_days_out`       | `integer` | `-1`      | Show only items which have a due date within N days into the future. <br>Make it 0 as a special mode to _hide_ items precisely | `filter_show_dates_starting`<br>`filter_show_dates_ending` | `integer` or `string` | `(none)`      | Only show tasks with the specified dates window. See **Filtering by Dates** below for details.    |
+| `filter_due_days_out` | `integer` | `-1`      | Show only items which have a due date within N days into the future. <br>Make it 0 as a special mode to _hide_ items precisely | 
+| `filter_show_dates_starting`<br>`filter_show_dates_ending` | `integer` or `string` | `(none)`      | Only show tasks with the specified dates window. See **Filtering by Dates** below for details.    |
 | `filter_show_dates_empty` | `boolean` | `true`      | Defines whether tasks without any specified date pass the filter or not. See **Filtering by Dates** below for details.    |
 
 > Note that the completed tasks list is cleared when the page is refreshed.
@@ -163,13 +164,15 @@ So, please bear with me and try to get into my term definitions. I promise I wil
 - Since the window is relative to now, it moves forward as time goes by. So the end of the window is what causes events to be admitted into the view, and the start of the window is what causes events to be _expired_ out of view.
 - Although in Todoist the date associated with a task is a "due" date, you don't necessarily have to use the tasks' dates like that. You can use them as start dates if you prefer.
 - Todoist has a secret "duration" attribute on each task, which (to my knowledge) can only be written and read through the API, programatically. You can use that for the filters.
+- if a task in Todoist has a due date that includes a time, it is considered inside the window only if that specific time is inside the window. But if it only has a due day, without a specified time, then it is considered inside the window whenever _any part_ of that day falls inside the window.
 
 | Date Filter explanations and examples               |   Meaning |
 | --------------------------------------------------- | ------------------------------------------------- |
-| `filter_show_dates_begin`   | Defines the start of the dates window, which moves forward expiring tasks out of the view.<br>If you use a number (like `-8` or `24`) it is interpreted as a number of hours. If you use a string like `"1"` it is interpreted as a number of days.<br>If you omit this setting it won't filter anything, so tasks won't expire by date. |
-| `filter_show_dates_end`   | Defines the end of the dates window, which moves forward bringing new tasks into the view.<br>If you use a number (like `-8` or `24`) it is interpreted as a number of hours. If you use a string like `"1"` it is interpreted as a number of days.<br>If you omit this setting it won't filter anything, so all future tasks will be visible. |
-
-
+| `filter_show_dates_begin`   | Defines the start of the dates window, which moves forward expiring tasks out of the view.<br>If you use a number (like `-8` or `24`) it is interpreted as a number of hours. <br>If you use a string like `"1"` it is interpreted as a number of days.<br>If you omit this setting it won't filter anything, so tasks won't expire by date. |
+| `filter_show_dates_end` | Defines the end of the dates window, which moves forward bringing new tasks into the view.<br>If you use a number (like `-8` or `24`) it is interpreted as a number of hours. <br>If you use a string like `"1"` it is interpreted as a number of days.<br>If you omit this setting it won't filter anything, so all future tasks will be visible. |
+| `filter_show_dates_begin: 0`<br> without any defined `filter_show_dates_end` | This is a special case that I use to work with event durations. If the event does not have duration, it simply appears in view when the date arrives, and stays there. But if it has a duration defined (through the API), then it will appear when the date arrives, and expire after the duration ends. This way you can actually specify two moments in a single task, defining exact times for it to show and then disappear. |
+| `filter_show_dates_end: "0"` | Today or overdue |
+| `filter_show_dates_end: "5"` | Due days out |
 
 ## Handling Events with Actions
 
