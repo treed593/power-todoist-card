@@ -806,25 +806,8 @@ class PowerTodoistCard extends LitElement {
     // -----------------------------------------------------------------------------------------------------------------------
     // -----------------------------------------------------------------------------------------------------------------------
     
-    render() {
-        this.myConfig = this.parseConfig(this.config);
-        let state = this.hass.states[this.config.entity] || undefined;
-        if (!state) {
-           throw new Error("thrown by pgr: state undefined in render");
-        }
-        var label_colors = this.hass.states["sensor.label_colors"] || undefined; 
-        if (!state || !label_colors) {
-            return html`Sensors don't have any data yet. Please wait a few seconds and refresh.`;
-        }
-        label_colors = label_colors.attributes.label_colors;
+    filterDates(items) {
 
-        var icons = ((typeof this.config.icons !== 'undefined') && (this.config.icons.length == 4)) 
-            ? this.config.icons 
-            : ["checkbox-marked-circle-outline", "circle-medium", "plus-outline", "trash-can-outline"]; 
-        
-        let items = state.attributes.items || [];
-
-        // due date handling is based on code from sw-carlos-sancristobal's fork.
         if (this.myConfig.sort_by_due_date) {
             items.sort((a, b) => {
                 if (!(a.due && b.due)) return 0;
@@ -881,7 +864,7 @@ class PowerTodoistCard extends LitElement {
                 return passStart && passEnd;
             });
         }
-
+/*
         if (this.myConfig.filter_today_overdue) { // tasks start showing on day when due, end showing never
             items = items.filter(item => {        
                 if (!item.due) return false;
@@ -904,7 +887,30 @@ class PowerTodoistCard extends LitElement {
                 return dNowPlus >= dItem;
             });
         }
+*/
 
+    }
+
+    render() {
+        this.myConfig = this.parseConfig(this.config);
+        let state = this.hass.states[this.config.entity] || undefined;
+        if (!state) {
+           throw new Error("thrown by pgr: state undefined in render");
+        }
+        var label_colors = this.hass.states["sensor.label_colors"] || undefined; 
+        if (!state || !label_colors) {
+            return html`Sensors don't have any data yet. Please wait a few seconds and refresh.`;
+        }
+        label_colors = label_colors.attributes.label_colors;
+
+        var icons = ((typeof this.config.icons !== 'undefined') && (this.config.icons.length == 4)) 
+            ? this.config.icons 
+            : ["checkbox-marked-circle-outline", "circle-medium", "plus-outline", "trash-can-outline"]; 
+        
+        let items = state.attributes.items || [];
+
+        this.filterDates(items);
+        
         // filter by section:
         let section_name2id = [];
         if (!this.myConfig.filter_section_id && this.myConfig.filter_section) {
