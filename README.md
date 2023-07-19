@@ -125,8 +125,6 @@ when they become due, down to the minute (I use this to "expire" daily tasks aft
 | `filter_section_id` | `integer` | `(none)`      | Only show tasks from one Todoist section, identified by its id.    |
 | `filter_section` | `string` | `(none)`      | Only show tasks from one Todoist section, identified by its name.  |
 | `filter_labels` | `list` | `(none)`      | Only show tasks with the specified Todoist labels. See **Filtering by Labels** below for details on this powerful option.    |
-| `filter_today_overdue` | `boolean` | `false`      | Only show tasks that are overdue or due today.    |
-| `filter_due_days_out` | `integer` | `-1`      | Show only items which have a due date within N days into the future. <br>Make it 0 as a special mode to _hide_ items precisely | 
 | `filter_show_dates_starting`<br>`filter_show_dates_ending` | `integer` or `string` | `(none)`      | Only show tasks with the specified dates window. See **Filtering by Dates** below for details.    |
 | `filter_show_dates_empty` | `boolean` | `true`      | Defines whether tasks without any specified date pass the filter or not. See **Filtering by Dates** below for details.    |
 
