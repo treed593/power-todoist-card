@@ -168,11 +168,11 @@ So, please bear with me and try to get into my term definitions. I promise I wil
 
 | Date Filter explanations and examples               |   Meaning |
 | --------------------------------------------------- | ------------------------------------------------- |
-| `filter_show_dates_begin`   | Defines the start of the dates window, which moves forward expiring tasks out of the view.<br>If you use a number (like `-8` or `24`) it is interpreted as a number of hours. <br>If you use a string like `"1"` it is interpreted as a number of days.<br>If you omit this setting it won't filter anything, so tasks won't expire by date. |
-| `filter_show_dates_end` | Defines the end of the dates window, which moves forward bringing new tasks into the view.<br>If you use a number (like `-8` or `24`) it is interpreted as a number of hours. <br>If you use a string like `"1"` it is interpreted as a number of days.<br>If you omit this setting it won't filter anything, so all future tasks will be visible. |
-| `filter_show_dates_begin: 0`<br> without any defined `filter_show_dates_end` | This is a special case that I use to work with event durations. If the event does not have duration, it simply appears in view when the date arrives, and stays there. But if it has a duration defined (through the API), then it will appear when the date arrives, and expire after the duration ends. This way you can actually specify two moments in a single task, defining exact times for it to show and then disappear. |
-| `filter_show_dates_end: "0"` | Today or overdue |
-| `filter_show_dates_end: "5"` | Due days out |
+| `filter_show_dates_starting`   | Defines the start of the dates window, which moves forward expiring tasks out of the view.<br>If you use a number (like `-8` or `24`) it is interpreted as a number of hours. <br>If you use a string like `"1"` it is interpreted as a number of days.<br>If you omit this setting it won't filter anything, so tasks won't expire by date. |
+| `filter_show_dates_ending` | Defines the end of the dates window, which moves forward bringing new tasks into the view.<br>If you use a number (like `-8` or `24`) it is interpreted as a number of hours. <br>If you use a string like `"1"` it is interpreted as a number of days.<br>If you omit this setting it won't filter anything, so all future tasks will be visible. |
+| `filter_show_dates_starting: 0`<br> (without any defined `filter_show_dates_ending`) | This is a special case that I use to work with event durations. If the event does not have duration, it simply appears in view when the date arrives, and stays there. But if it has a duration defined (through the API), then it will appear when the date arrives, and expire after the duration ends. This way you can actually specify two moments in a single task, defining exact times for it to show and then disappear. |
+| `filter_show_dates_ending: "0"` | Show items due Today, or already overdue |
+| `filter_show_dates_ending: "5"` | Show items coming Due anytime in the next 5 days. |
 
 ## Handling Events with Actions
 
