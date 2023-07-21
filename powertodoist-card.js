@@ -483,7 +483,7 @@ class PowerTodoistCard extends LitElement {
         let actions = this.config[button] !== undefined ? this.parseConfig(this.config[button]) : []; 
         let automation = "", confirm = "", promptTexts = "", toast = "";
         let commands = [], updates = [], labelChanges = [], adds = [], allow = [], matches = [], emphasis = [];
-        try { automation   = actions.find(a => typeof a === 'object' && a.hasOwnProperty('automation')).automation || "";} catch (error) { }       
+        try { automation   = actions.find(a => typeof a === 'object' && a.hasOwnProperty('service')).service || "";} catch (error) { }       
         try { confirm      = actions.find(a => typeof a === 'object' && a.hasOwnProperty('confirm')).confirm || "";} catch (error) { }       
         try { promptTexts  = actions.find(a => typeof a === 'object' && a.hasOwnProperty('prompt_texts')).prompt_texts || "";} catch (error) { }       
         try { updates      = actions.find(a => typeof a === 'object' && a.hasOwnProperty('update')).update || [];} catch (error) { }       
@@ -736,13 +736,15 @@ class PowerTodoistCard extends LitElement {
 
         // deal with automations:    
         if (automation.length) {
-            this.hass.callService('automation', 'trigger', {
-                entity_id: 'automation.' + automation,
-                }).then(function() {
-                    console.log('Automation triggered successfully from todoist JS!');
-                }).catch(function(error) {
-                    console.error('Error triggering automation from todoist JS:', error);
-                });
+            this.hass.callService(
+                automation.includes('script.') ? 'homeassistant' : 'automation', 
+                automation.includes('script.') ? 'turn_on' : 'trigger', 
+                { entity_id: automation, }
+            ).then(function() {
+                console.log('Automation triggered successfully from todoist JS!');
+            }).catch(function(error) {
+                console.error('Error triggering automation from todoist JS:', error);
+            });
         }        
         this.hass.callService('homeassistant', 'update_entity', {
             entity_id: this.config.entity,
@@ -864,7 +866,8 @@ class PowerTodoistCard extends LitElement {
                 return passStart && passEnd;
             });
         }
-/*
+
+        /*
         if (this.myConfig.filter_today_overdue) { // tasks start showing on day when due, end showing never
             items = items.filter(item => {        
                 if (!item.due) return false;
@@ -887,8 +890,7 @@ class PowerTodoistCard extends LitElement {
                 return dNowPlus >= dItem;
             });
         }
-*/
-
+        */
     }
 
     render() {
@@ -945,8 +947,8 @@ class PowerTodoistCard extends LitElement {
                     }
                 });
                 return (excludes == 0) && (includes > 0);
-        });
-    }
+            });
+        }
 
     // Starts with named section or default, tries to get section name from id, but lets friendly_name override it:
     let cardName = this.config.filter_section || "ToDoist";
