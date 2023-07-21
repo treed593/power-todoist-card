@@ -40,7 +40,7 @@ cards:
     actions_label:
       - label:
         - "!Green"
-      - automation: action_notify_sim
+      - service: automation.action_notify_sim
     actions_dbl_label:
       - toast: "Toasted! 🍞"
       - label:
