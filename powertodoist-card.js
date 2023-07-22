@@ -995,7 +995,9 @@ class PowerTodoistCard extends LitElement {
                                         @dblclick=${() => this.itemAction(item, "dbl_description")}   
                                     ><span class="powertodoist-item-description">${item.description}</span></div>`
                                     : html`` }
-                                ${this.renderLabels(item, item.labels, 
+                                ${this.renderLabels(item, 
+                                    [this.myConfig.show_dates && item.due ? dateFormat(item.due.date, "🗓 dd-mmm H'h'MM") : [],
+                                     ...item.labels].filter(String), // filter removes the empty []s
                                     [...(cardLabels.length == 1 ? cardLabels : []), // card labels excluded unless more than one
                                      ...item.labels.filter(l => l.startsWith("_"))], // "_etc" labels excluded
                                     label_colors) }
