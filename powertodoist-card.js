@@ -810,10 +810,10 @@ class PowerTodoistCard extends LitElement {
     
     filterDates(items) {
 
-        if (this.myConfig.sort_by_due_date) {
+        if ((typeof this.myConfig.sort_by_due_date !== 'undefined') && (this.myConfig.sort_by_due_date !== false)) {
             items.sort((a, b) => {
                 if (!(a.due && b.due)) return 0;
-                if (this.myConfig.ascending_order)
+                if (this.myConfig.sort_by_due_date == 'ascending')
                     return (new Date(a.due.date)).getTime() - (new Date(b.due.date)).getTime();
                 else
                     return (new Date(b.due.date)).getTime() - (new Date(a.due.date)).getTime();
