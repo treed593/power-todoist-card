@@ -117,6 +117,7 @@ Spaces and hyphens turned into `_`, and everything became lowercase. In case of 
 | `show_item_close`    | `boolean` | `true`       | Show `close/complete` and `uncomplete` buttons.       |
 | `show_item_delete`   | `boolean` | `true`       | Show `delete` buttons.        |
 | `show_card_labels`   | `boolean` | `true`       | Show card-level labels on top (see `filter_labels` below).        |
+| `show_dates`         | `boolean` | `false`      | Show due dates on the labels row.        |
 | `use_quick_add`      | `boolean` | `false`      | Use the [Quick Add](https://todoist.com/help/articles/task-quick-add) implementation, available in the official Todoist clients.<br>Note that Power-Todoist will automatically add your card's project tag, and your `filter_section`, if specified. |
 | `sort_by_due_date`   | `string`  | (none)       | Sort the tasks by their due date. If it is undefined, or `'false'`, no sorting occurs. If it is set to `'ascending'`, it sorts oldest due dates first. Any other string (I suggest using `'descending'`) will sort older dates last. |
 | `friendly_name`      | `string`  | `Todoist`    | The card name shown on top uses a somewhat elaborate logic: <br>the default is `Todoist`, if no name is specified. <br>But if a Section filter is specified, then that section name will be used instead. <br>Finally, if you do use the `friendly_name` option, it will override anything else.  |
