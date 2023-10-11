@@ -22,7 +22,7 @@ https://github.com/pgorod/power-todoist-card/assets/15945027/d049b00a-d406-4b7c-
 
 1. Download `powertodoist-card.js` file from the [latest release](https://github.com/pgorod/power-todoist-card/releases/latest).
 2. Put `powertodoist-card.js` file into your `config/www` folder.
-3. Add a reference to `powertodoist-card.js` in Lovelace. There's two way to do that:
+3. Add a reference to `powertodoist-card.js` in Lovelace. There are two ways to do that:
    1. **Using UI:** _Configuration_ → _Lovelace Dashboards_ → _Resources_ → Click Plus button → Set _Url_ as `/local/powertodoist-card.js` → Set _Resource type_ as `JavaScript Module`.
    2. **Using YAML:** Add the following code to `lovelace` section.
       ```yaml
