@@ -401,11 +401,11 @@ class PowerTodoistCard extends LitElement {
                         var qa = value;
                         try {
                             if (this.myConfig.filter_section && !qa.includes('/'))
-                                qa = qa + ' /' + this.myConfig.filter_section.replaceAll(' ','');
+                                qa = qa + ' /' + this.myConfig.filter_section; //.replaceAll(' ','');
                         } catch (error) { }
                         try {
                             if (state.attributes.project.name && !qa.includes('#'))
-                                qa = qa + ' #' + state.attributes.project.name.replaceAll(' ','');
+                                qa = qa + ' #' + state.attributes.project.name; //.replaceAll(' ','');
                         } catch (error) { }
 
                         this.hass
