@@ -12,11 +12,11 @@ https://github.com/pgorod/power-todoist-card/assets/15945027/d049b00a-d406-4b7c-
 
 ### HACS
 
-(not working yet...)
+This card is available in [HACS](https://hacs.xyz) (Home Assistant Community Store).
 
-~~This card is available in [HACS](https://hacs.xyz) (Home Assistant Community Store).~~
+Just search for `PowerTodoist Card` in the HACS list or click the badge below:
 
-~~Just search for `PowerTodoist Card` in HACS `Frontend` tab.~~
+[![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=pgorod&repository=power-todoist-card)
 
 ### Manual
 
