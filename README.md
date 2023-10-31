@@ -77,7 +77,7 @@ This card can be configured using Lovelace UI editor.
     
     👉 The Sensor definition, on the other hand, can be cloned to allow for different projects, just make sure you set a unique entity name, and set the appropriate `TODOIST_PROJECT_ID` for each one (see below).
 2. In that `configuration.yaml`, replace `TODOIST_PROJECT_ID` with ID of your selected Todoist project.
-    > You can get `TODOIST_PROJECT_ID` from project URL, which usually looks like this:
+    > You can get `TODOIST_PROJECT_ID` from project URL after logging in to your Todoist account in a browser. It usually looks like this:
     `https://todoist.com/app/project/TODOIST_PROJECT_ID`
 3. Add this to `secrets.yaml`:
     ```yaml
@@ -116,6 +116,7 @@ Spaces and hyphens turned into `_`, and everything became lowercase. In case of 
 | `show_item_add`      | `boolean` | `true`       | Show text input element for adding new items to the list.        |
 | `show_item_close`    | `boolean` | `true`       | Show `close/complete` and `uncomplete` buttons.       |
 | `show_item_delete`   | `boolean` | `true`       | Show `delete` buttons.        |
+| `show_item_labels`   | `boolean` | `true`       | Show item-level labels beneath each item (see `filter_labels` below). |
 | `show_card_labels`   | `boolean` | `true`       | Show card-level labels on top (see `filter_labels` below).        |
 | `show_dates`         | `boolean` | `false`      | Show due dates on the labels row.        |
 | `use_quick_add`      | `boolean` | `false`      | Use the [Quick Add](https://todoist.com/help/articles/task-quick-add) implementation, available in the official Todoist clients.<br>Note that Power-Todoist will automatically add your card's project tag, and your `filter_section`, if specified. |
@@ -222,7 +223,8 @@ The items in this **Actions** table must always appear below a user **Event** fr
   - confirm
   - delete
 ```
-Actions are executed in the order given. If you include a list of actions for an event, the default actions won't be executed unless you specify them explicitly. 
+Actions are executed in the order given. 
+If you include a list of actions for an event, the default actions won't be executed unless you specify them explicitly. 
 
 ## Variables
 
@@ -242,7 +244,7 @@ Let me know if you have other ideas for variables that could prove useful.
 
 ## Learn by example
 
-Have a look at this demo file: 
+👉 Have a look at this demo file: 
 https://github.com/pgorod/power-todoist-card/blob/main/todoist_demo.yaml
 
 ## Adding Tasks from Automation
