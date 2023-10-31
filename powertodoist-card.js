@@ -867,6 +867,8 @@ class PowerTodoistCard extends LitElement {
             });
         }
 
+        return items;
+
         /*
         if (this.myConfig.filter_today_overdue) { // tasks start showing on day when due, end showing never
             items = items.filter(item => {        
@@ -911,7 +913,7 @@ class PowerTodoistCard extends LitElement {
         
         let items = state.attributes.items || [];
 
-        this.filterDates(items);
+        items = this.filterDates(items);
         
         // filter by section:
         let section_name2id = [];
@@ -996,8 +998,10 @@ class PowerTodoistCard extends LitElement {
                                     ><span class="powertodoist-item-description">${item.description}</span></div>`
                                     : html`` }
                                 ${this.renderLabels(item, 
+                                    // labels:
                                     [this.myConfig.show_dates && item.due ? dateFormat(item.due.date, "🗓 dd-mmm H'h'MM") : [],
                                      ...item.labels].filter(String), // filter removes the empty []s
+                                    // exclusions:
                                     [...(cardLabels.length == 1 ? cardLabels : []), // card labels excluded unless more than one
                                      ...item.labels.filter(l => l.startsWith("_"))], // "_etc" labels excluded
                                     label_colors) }
@@ -1021,6 +1025,11 @@ class PowerTodoistCard extends LitElement {
     }
     
     renderLabels(item, labels, exclusions, label_colors) {
+        if ((item !== undefined) && (this.config.show_item_labels === false)) {
+            // remove all labels except the due date if it is there:
+            labels = this.myConfig.show_dates && item.due ? Array(labels[0]) : [];
+        }
+
         let rendered = html`
             ${(labels.length - exclusions.length > 0) 
                 ? html`<div class="labelsDiv"><ul class="labels">${labels.map( label => 
