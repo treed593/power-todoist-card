@@ -4,7 +4,7 @@
 ![hacs_badge](https://img.shields.io/github/v/release/pgorod/power-todoist-card)
 ![hacs_badge](https://img.shields.io/github/license/pgorod/power-todoist-card)
 
-PowerTodoist card for [Home Assistant](https://www.home-assistant.io) Lovelace UI. This card displays items from selected Todoist projects.
+PowerTodoist card for [Home Assistant](https://www.home-assistant.io) Lovelace UI. This card displays items from selected Todoist projects. This project uses the Todoist API but it is not created by, affiliated with, or supported by Doist.
 
 https://github.com/pgorod/power-todoist-card/assets/15945027/d049b00a-d406-4b7c-8803-92695d88b1b2
 
