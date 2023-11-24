@@ -55,14 +55,15 @@ This card can be configured using Lovelace UI editor.
           - project_notes
         scan_interval: 30
         
-      - name: label_colors
-        platform: command_line
-        command: !secret todoist_cmd_with_api_token
-        value_template: > 
+    command_line:
+      - sensor:
+          name: label_colors
+          command: !secret todoist_cmd_with_api_token
+          value_template: >
             {{ value_json.label_colors | length }}
-        json_attributes:
-            - label_colors 
-        scan_interval: 200
+          json_attributes:
+            - label_colors
+          scan_interval: 200
 
     rest_command:
       todoist:
