@@ -8,7 +8,7 @@ PowerTodoist card for [Home Assistant](https://www.home-assistant.io) Lovelace U
 
 https://github.com/pgorod/power-todoist-card/assets/15945027/d049b00a-d406-4b7c-8803-92695d88b1b2
 
-## Installing
+## Installation 
 
 ### HACS
 
@@ -79,7 +79,7 @@ This card can be configured using Lovelace UI editor.
     👉 The Sensor definition, on the other hand, can be cloned to allow for different projects, just make sure you set a unique entity name, and set the appropriate `TODOIST_PROJECT_ID` for each one (see below).
 2. In that `configuration.yaml`, replace `TODOIST_PROJECT_ID` with ID of your selected Todoist project.
     > You can get `TODOIST_PROJECT_ID` from project URL after logging in to your Todoist account in a browser. It usually looks like this:
-    `https://todoist.com/app/project/TODOIST_PROJECT_ID`
+          `https://todoist.com/app/project/**TODOIST_PROJECT_ID**` or `https://todoist.com/app/project/name_of_project-**TODOIST_PROJECT_ID**`
 3. Add this to `secrets.yaml`:
     ```yaml
     todoist_api_token: 'Bearer TODOIST_API_TOKEN'
