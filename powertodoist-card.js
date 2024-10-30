@@ -1005,13 +1005,13 @@ class PowerTodoistCard extends LitElement {
                             >
                                 <span class="powertodoist-item-content ${(this.itemsEmphasized[item.id]) ? css`powertodoist-special` : css``}" >
                                 ${item.content}</span></div>
+                                <div><span class="powertodoist-item-description">${item.priority}</span></div>
                                 ${item.description
                                     ? html`<div
                                         @click=${() => this.itemAction(item, "description")} 
                                         @dblclick=${() => this.itemAction(item, "dbl_description")}   
                                     ><span class="powertodoist-item-description">${item.description}</span></div>`
                                     : html`` }
-				Priority: ${item.priority}
                                 ${this.renderLabels(item, 
                                     // labels:
                                     [this.myConfig.show_dates && item.due ? dateFormat(item.due.date, "🗓 dd-mmm H'h'MM") : [],
