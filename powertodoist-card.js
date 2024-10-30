@@ -911,13 +911,13 @@ class PowerTodoistCard extends LitElement {
     processPriority(priority) {
         switch(priority){
             case 4:
-                return 1
+                return "High"
             case 3:
-                return 2
+                return "Medium"
             case 2:
-                return 3
+                return "Low"
             case 1:
-                return 4
+                return "Lowest"
         }
     }
 
@@ -1018,7 +1018,7 @@ class PowerTodoistCard extends LitElement {
                             >
                                 <span class="powertodoist-item-content ${(this.itemsEmphasized[item.id]) ? css`powertodoist-special` : css``}" >
                                 ${item.content}</span></div>
-                                <div><span class="powertodoist-item-description">Priority: ${this.processPriority(item.priority)}</span></div>
+                                <div><span class="powertodoist-item-description">${this.processPriority(item.priority)} Priority</span></div>
                                 ${item.description
                                     ? html`<div
                                         @click=${() => this.itemAction(item, "description")} 
