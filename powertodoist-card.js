@@ -1011,6 +1011,7 @@ class PowerTodoistCard extends LitElement {
                                         @dblclick=${() => this.itemAction(item, "dbl_description")}   
                                     ><span class="powertodoist-item-description">${item.description}</span></div>`
                                     : html`` }
+				Priority: ${item.priority}
                                 ${this.renderLabels(item, 
                                     // labels:
                                     [this.myConfig.show_dates && item.due ? dateFormat(item.due.date, "🗓 dd-mmm H'h'MM") : [],
