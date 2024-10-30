@@ -908,6 +908,19 @@ class PowerTodoistCard extends LitElement {
             return items;        
     }
 
+    processPriority(priority) {
+        switch(priority){
+            case 4:
+                return 1
+            case 3:
+                return 2
+            case 2:
+                return 3
+            case 1:
+                return 4
+        }
+    }
+
     render() {
         this.myConfig = this.parseConfig(this.config);
         let state = this.hass.states[this.config.entity] || undefined;
@@ -1005,7 +1018,7 @@ class PowerTodoistCard extends LitElement {
                             >
                                 <span class="powertodoist-item-content ${(this.itemsEmphasized[item.id]) ? css`powertodoist-special` : css``}" >
                                 ${item.content}</span></div>
-                                <div><span class="powertodoist-item-description">${item.priority}</span></div>
+                                <div><span class="powertodoist-item-description">Priority: ${this.processPriority(item.priority)}</span></div>
                                 ${item.description
                                     ? html`<div
                                         @click=${() => this.itemAction(item, "description")} 
